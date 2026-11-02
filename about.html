@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About | Lily Coash-Johnson</title>
+  <meta name="description" content="Lily Coash-Johnson is a Journalism and Broadcast Production student at the University of Nebraska–Lincoln with experience in public relations, podcasting, publication design and event coordination.">
+  <meta property="og:title" content="About | Lily Coash-Johnson">
+  <meta property="og:description" content="Journalism and Broadcast Production student at UNL. Storyteller, event coordinator, future lawyer.">
+  <meta property="og:type" content="profile">
+  <meta property="og:image" content="https://lcoashjohnson.github.io/assets/lily.jpg">
+  <meta name="theme-color" content="#1b3a57">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --navy: #1b3a57;
+      --navy-deep: #12283d;
+      --charcoal: #4a4a4a;
+      --clay: #c2562b;
+      --clay-soft: #f3dfd5;
+      --paper: #faf7f2;
+      --card: #ffffff;
+      --ink: #1f2a36;
+      --muted: #5d6773;
+      --line: #e4ddd2;
+      --serif: "Fraunces", Georgia, "Times New Roman", serif;
+      --sans: "Karla", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --radius: 18px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 18px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: var(--navy); }
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid var(--clay);
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+    .wrap { width: min(1040px, 100% - 40px); margin-inline: auto; }
+
+    /* ---------- Header ---------- */
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(250, 247, 242, .88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar .wrap {
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 64px; gap: 16px;
+    }
+    .brand {
+      font-family: var(--serif); font-weight: 800; font-size: 1.15rem;
+      letter-spacing: .01em; text-decoration: none; color: var(--navy);
+    }
+    .brand span { font-weight: 500; }
+    .nav { display: flex; gap: 22px; align-items: center; }
+    .nav a {
+      text-decoration: none; color: var(--charcoal);
+      font-weight: 500; font-size: .95rem;
+    }
+    .nav a:hover { color: var(--clay); }
+    @media (max-width: 680px) { .nav a:not(.nav-cta) { display: none; } }
+
+    /* ---------- Buttons ---------- */
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 12px 22px; border-radius: 999px;
+      font: 700 1rem/1 var(--sans); text-decoration: none;
+      border: 2px solid var(--navy);
+      transition: transform .15s ease, background .15s ease, color .15s ease;
+    }
+    .btn svg { width: 18px; height: 18px; fill: currentColor; flex: none; }
+    .btn-primary { background: var(--navy); color: #fff; }
+    .btn-primary:hover { background: var(--navy-deep); transform: translateY(-2px); }
+    .btn-ghost { background: transparent; color: var(--navy); }
+    .btn-ghost:hover { background: var(--navy); color: #fff; transform: translateY(-2px); }
+    .nav-cta { padding: 9px 16px; font-size: .9rem; color: #fff !important; }
+
+    /* ---------- Hero ---------- */
+    .hero { padding: 64px 0 40px; }
+    .hero-grid {
+      display: grid; grid-template-columns: 1.25fr .75fr;
+      gap: 56px; align-items: center;
+    }
+    .eyebrow {
+      display: inline-block; margin: 0 0 18px;
+      font-weight: 700; font-size: .8rem; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--clay);
+    }
+    h1 {
+      font-family: var(--serif); font-weight: 800;
+      font-size: clamp(2.6rem, 6.4vw, 4.6rem); line-height: 1.03;
+      letter-spacing: -.02em; margin: 0 0 22px; color: var(--navy);
+    }
+    h1 em { font-style: normal; color: var(--clay); }
+    .lede { font-size: 1.2rem; color: var(--charcoal); max-width: 34em; margin: 0 0 30px; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 14px; }
+
+    .portrait { position: relative; justify-self: center; width: min(100%, 340px); }
+    .portrait::before {
+      content: ""; position: absolute; inset: 0;
+      border-radius: 50%; background: var(--clay-soft);
+      transform: translate(16px, 16px);
+    }
+    .portrait img {
+      position: relative; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover;
+      border-radius: 50%; border: 6px solid var(--paper);
+      box-shadow: 0 0 0 2px var(--navy);
+    }
+
+    /* ---------- Facts strip ---------- */
+    .facts {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      background: var(--navy); color: #fff;
+      border-radius: var(--radius); margin-top: 48px; overflow: hidden;
+    }
+    .fact { padding: 22px 24px; border-left: 1px solid rgba(255,255,255,.14); }
+    .fact:first-child { border-left: 0; }
+    .fact small {
+      display: block; font-size: .72rem; letter-spacing: .14em;
+      text-transform: uppercase; color: #f0b79d; font-weight: 700; margin-bottom: 4px;
+    }
+    .fact strong { font-family: var(--serif); font-size: 1.15rem; font-weight: 700; line-height: 1.25; display: block; }
+
+    /* ---------- Sections ---------- */
+    section { padding: 72px 0 8px; }
+    .kicker {
+      font-weight: 700; font-size: .8rem; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--clay); margin: 0 0 8px;
+    }
+    h2 {
+      font-family: var(--serif); font-weight: 800; color: var(--navy);
+      font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.12; letter-spacing: -.01em;
+      margin: 0 0 24px;
+    }
+
+    .story { display: grid; grid-template-columns: .8fr 1.2fr; gap: 56px; align-items: start; }
+    .story p { margin: 0 0 1.1em; }
+    .story .pull {
+      font-family: var(--serif); font-size: 1.55rem; line-height: 1.3; font-weight: 700;
+      color: var(--navy); border-left: 5px solid var(--clay); padding-left: 20px; margin: 0;
+    }
+
+    /* ---------- Highlights ---------- */
+    .highlights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .stat {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 26px 26px 24px;
+    }
+    .stat .big {
+      font-family: var(--serif); font-weight: 800; font-size: 2.7rem; line-height: 1;
+      color: var(--clay); letter-spacing: -.02em; margin-bottom: 10px;
+    }
+    .stat p { margin: 0; color: var(--charcoal); font-size: 1rem; line-height: 1.5; }
+
+    /* ---------- Timeline ---------- */
+    .timeline { list-style: none; margin: 0; padding: 0 0 0 30px; position: relative; }
+    .timeline::before {
+      content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px;
+      width: 2px; background: var(--navy); opacity: .25;
+    }
+    .job { position: relative; margin-bottom: 20px; }
+    .job::before {
+      content: ""; position: absolute; left: -30px; top: 30px;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--paper); border: 4px solid var(--clay);
+    }
+    .job-card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 24px 28px;
+    }
+    .job-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 20px; margin-bottom: 8px; }
+    .job h3 { font-family: var(--serif); font-size: 1.3rem; line-height: 1.25; margin: 0; color: var(--navy); }
+    .job .role { display: block; font-family: var(--sans); font-weight: 500; font-size: 1rem; color: var(--charcoal); margin-top: 2px; }
+    .dates {
+      font-weight: 700; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted); white-space: nowrap; padding-top: 6px;
+    }
+    .now {
+      display: inline-block; background: var(--clay-soft); color: var(--clay);
+      border-radius: 999px; padding: 2px 10px; margin-left: 8px; font-size: .7rem;
+    }
+    .job p { margin: 0; color: var(--charcoal); font-size: 1rem; }
+
+    /* ---------- Skills ---------- */
+    .skill-groups { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .skill-group {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 24px 26px;
+    }
+    .skill-group h3 {
+      margin: 0 0 14px; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--muted); font-weight: 700;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .chips li {
+      background: var(--paper); border: 1px solid var(--line);
+      padding: 6px 14px; border-radius: 999px; font-size: .95rem; font-weight: 500; color: var(--navy);
+    }
+
+    /* ---------- Beyond ---------- */
+    .two-col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .panel {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 26px 28px;
+    }
+    .panel h3 { font-family: var(--serif); font-size: 1.25rem; margin: 0 0 14px; color: var(--navy); }
+    .panel ul { margin: 0; padding-left: 1.1em; }
+    .panel li { margin-bottom: 6px; color: var(--charcoal); }
+    .panel li::marker { color: var(--clay); }
+    .panel .sub { color: var(--muted); font-size: .95rem; }
+
+    /* ---------- Connect ---------- */
+    .connect {
+      margin: 72px 0 0; background: var(--navy); color: #fff;
+      border-radius: 28px; padding: 56px 40px; text-align: center;
+    }
+    .connect h2 { color: #fff; margin-bottom: 12px; }
+    .connect p { max-width: 36em; margin: 0 auto 28px; color: #d9e2ec; }
+    .connect .cta-row { justify-content: center; }
+    .connect .btn-primary { background: #fff; color: var(--navy); border-color: #fff; }
+    .connect .btn-primary:hover { background: var(--clay-soft); }
+    .connect .btn-ghost { color: #fff; border-color: rgba(255,255,255,.6); }
+    .connect .btn-ghost:hover { background: #fff; color: var(--navy); }
+
+    footer { padding: 32px 0 48px; text-align: center; color: var(--muted); font-size: .9rem; }
+
+    /* ---------- Scroll reveal (only when JS is on) ---------- */
+    .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+    .js .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .js .reveal { opacity: 1; transform: none; transition: none; }
+      .btn { transition: none; }
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 860px) {
+      body { font-size: 17px; }
+      .hero { padding-top: 40px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 36px; }
+      .portrait { order: -1; width: min(70%, 260px); justify-self: start; }
+      .facts { grid-template-columns: repeat(2, 1fr); }
+      .fact:nth-child(3) { border-left: 0; }
+      .fact:nth-child(n+3) { border-top: 1px solid rgba(255,255,255,.14); }
+      .story { grid-template-columns: 1fr; gap: 28px; }
+      .highlights { grid-template-columns: 1fr; }
+      .skill-groups, .two-col { grid-template-columns: 1fr; }
+      .connect { padding: 44px 24px; }
+    }
+    @media (max-width: 480px) {
+      .job-card { padding: 20px; }
+      .dates { white-space: normal; }
+    }
+  </style>
+</head>
+<body>
+  <script>document.documentElement.classList.add('js');</script>
+
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="#top">Lily <span>Coash-Johnson</span></a>
+      <nav class="nav" aria-label="Page sections">
+        <a href="#story">Story</a>
+        <a href="#experience">Experience</a>
+        <a href="#skills">Skills</a>
+        <a class="btn btn-primary nav-cta" href="https://www.linkedin.com/in/lily-coash-johnson-728100325" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <div class="wrap hero">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Journalism &amp; Broadcast Production · UNL</p>
+          <h1>Hi, I’m Lily. I tell stories and <em>make things happen.</em></h1>
+          <p class="lede">
+            I’m a double major at the University of Nebraska–Lincoln who loves the
+            moment a messy idea becomes a finished story, a polished publication, or a
+            conference that runs without a hitch. Next stop: investigative writing,
+            broadcasting, and eventually law school.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="https://www.linkedin.com/in/lily-coash-johnson-728100325" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+              Connect on LinkedIn
+            </a>
+            <a class="btn btn-ghost" href="mailto:lcoash-johnson2@huskers.unl.edu">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 18.5v-13zm2.4.5L12 12.2 19.6 6H4.4zM20 7.9l-7.37 6.02a1 1 0 0 1-1.26 0L4 7.9V18h16V7.9z"/></svg>
+              Say hello
+            </a>
+          </div>
+        </div>
+        <div class="portrait">
+          <img src="assets/lily.jpg" width="560" height="560" alt="Portrait of Lily Coash-Johnson smiling in a plaid blazer and rust-colored top">
+        </div>
+      </div>
+
+      <div class="facts reveal" role="list">
+        <div class="fact" role="listitem"><small>Double major</small><strong>Journalism + Broadcast Production</strong></div>
+        <div class="fact" role="listitem"><small>Minor</small><strong>English</strong></div>
+        <div class="fact" role="listitem"><small>Track</small><strong>Pre-Law</strong></div>
+        <div class="fact" role="listitem"><small>Based in</small><strong>Lincoln, Nebraska</strong></div>
+      </div>
+    </div>
+
+    <!-- STORY -->
+    <section id="story">
+      <div class="wrap story reveal">
+        <div>
+          <p class="kicker">My story</p>
+          <h2>From PR to the newsroom, with a stop at the conference room.</h2>
+          <p class="pull">Every role I’ve taken has pointed me back to telling true, useful stories.</p>
+        </div>
+        <div>
+          <p>
+            I started out interested in public relations. A PR internship with Shawnee Mission
+            School District let me write stories, produce multimedia packages, attend events and
+            learn how to network with adults in the field. It also made me realize that
+            <strong>journalism is a great field for me</strong>.
+          </p>
+          <p>
+            Since then I’ve run social media and hosted podcasts, designed a 50-page magazine, and
+            discovered an unexpected love for meeting coordination while keeping multiple
+            conferences moving at once. Each experience taught me to think on my feet, keep an eye
+            on long-term goals, and stay calm when things get busy.
+          </p>
+          <p>
+            Today I’m studying Journalism and Broadcast Production on a pre-law track. I’m drawn to
+            investigative writing and broadcasting, and I plan to go to law school after I graduate.
+            When I’m not in class, I’m training new teammates at The Mill or serving as Philanthropy and Co-Sisterhood Chair for my sorority.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HIGHLIGHTS -->
+    <section aria-labelledby="highlights-h">
+      <div class="wrap">
+        <p class="kicker reveal">Highlights</p>
+        <h2 id="highlights-h" class="reveal">A few things I’m proud of</h2>
+        <div class="highlights">
+          <div class="stat reveal">
+            <div class="big">2023</div>
+            <p><strong>NSPA Feature Story Finalist</strong> for my reporting and writing.</p>
+          </div>
+          <div class="stat reveal">
+            <div class="big">50 pages</div>
+            <p>Designed and created the American Association of School Personnel Administrators’ summer magazine.</p>
+          </div>
+          <div class="stat reveal">
+            <div class="big">Multiple</div>
+            <p>Conferences hosted at the same time as Meetings and Events Assistant at NASB.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience">
+      <div class="wrap">
+        <p class="kicker reveal">Experience</p>
+        <h2 class="reveal">Where I’ve worked</h2>
+        <ol class="timeline">
+          <li class="job reveal">
+            <div class="job-card">
+              <div class="job-head">
+                <h3>The Mill <span class="role">Barista &amp; Trainer</span></h3>
+                <span class="dates">Aug 2025 – Present<span class="now">Current</span></span>
+              </div>
+              <p>
+                Working in a fast-paced shop has taught me a lot about customer service and staying
+                steady under pressure. As a trainer, I help new teammates get up to speed, handle
+                conflicts between staff, and build a work environment where everyone can succeed.
+              </p>
+            </div>
+          </li>
+          <li class="job reveal">
+            <div class="job-card">
+              <div class="job-head">
+                <h3>Nebraska Association of School Boards <span class="role">Meetings and Events Assistant</span></h3>
+                <span class="dates">Nov 2024 – Jun 2025</span>
+              </div>
+              <p>
+                I joined NASB thinking it would be a PR job and ended up falling in love with meeting
+                coordination. I built strong organizational skills, learned to think quickly on my
+                feet, and balanced hosting multiple conferences at one time while keeping long-term
+                goals in focus.
+              </p>
+            </div>
+          </li>
+          <li class="job reveal">
+            <div class="job-card">
+              <div class="job-head">
+                <h3>American Association of School Personnel Administrators (AASPA) <span class="role">Marketing Intern</span></h3>
+                <span class="dates">May 2024 – Aug 2024</span>
+              </div>
+              <p>
+                Over three months I ran AASPA’s social media platforms, made advertisements for
+                upcoming events, hosted podcasts with members, and created the organization’s
+                50-page summer magazine.
+              </p>
+            </div>
+          </li>
+          <li class="job reveal">
+            <div class="job-card">
+              <div class="job-head">
+                <h3>Shawnee Mission School District (SMSD) <span class="role">Public Relations Intern</span></h3>
+                <span class="dates">2023 – 2024</span>
+              </div>
+              <p>
+                I worked with the district’s PR department, wrote stories, produced multimedia
+                packages and attended events. I also learned how to network with adults and what a
+                career in my field could look like, which is when I realized journalism was for me.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+      <div class="wrap">
+        <p class="kicker reveal">Skills</p>
+        <h2 class="reveal">What I bring to a team</h2>
+        <div class="skill-groups">
+          <div class="skill-group reveal">
+            <h3>Media &amp; storytelling</h3>
+            <ul class="chips">
+              <li>Podcast production</li>
+              <li>Publication design</li>
+              <li>Multimedia packages</li>
+              <li>Social media management</li>
+              <li>Feature writing</li>
+            </ul>
+          </div>
+          <div class="skill-group reveal">
+            <h3>Tools</h3>
+            <ul class="chips">
+              <li>Adobe Creative Suite</li>
+              <li>Microsoft Suite</li>
+            </ul>
+          </div>
+          <div class="skill-group reveal">
+            <h3>Planning &amp; events</h3>
+            <ul class="chips">
+              <li>Event coordination</li>
+              <li>Conference coordination</li>
+              <li>Time management</li>
+              <li>Creative problem solving</li>
+            </ul>
+          </div>
+          <div class="skill-group reveal">
+            <h3>Working with people</h3>
+            <ul class="chips">
+              <li>Leadership</li>
+              <li>Conflict resolution</li>
+              <li>Emotional intelligence</li>
+              <li>Team player</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EDUCATION + INVOLVEMENTS -->
+    <section aria-labelledby="beyond-h">
+      <div class="wrap">
+        <p class="kicker reveal">Beyond the resume</p>
+        <h2 id="beyond-h" class="reveal">Education &amp; involvement</h2>
+        <div class="two-col">
+          <div class="panel reveal">
+            <h3>Education</h3>
+            <ul>
+              <li><strong>University of Nebraska–Lincoln</strong> <span class="sub">· 2024 – Present</span>
+                <ul>
+                  <li>Double major in Journalism and Broadcast Production</li>
+                  <li>English minor</li>
+                  <li>Pre-Law track</li>
+                </ul>
+              </li>
+              <li><strong>Shawnee Mission West High School</strong> <span class="sub">· Overland Park, Kansas · 2020 – 2024</span></li>
+            </ul>
+          </div>
+          <div class="panel reveal">
+            <h3>Involvement &amp; honors</h3>
+            <ul>
+              <li>Philanthropy and Co-Sisterhood Chair, A.O.E. Sorority</li>
+              <li>2023 NSPA Feature Story Finalist</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONNECT -->
+    <div class="wrap">
+      <div class="connect reveal" id="connect">
+        <h2>Let’s connect</h2>
+        <p>
+          Whether you’re hiring, collaborating on a story, or just want to talk journalism, I’d
+          love to hear from you.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/lily-coash-johnson-728100325" target="_blank" rel="noopener noreferrer">View my LinkedIn</a>
+          <a class="btn btn-ghost" href="mailto:lcoash-johnson2@huskers.unl.edu">Email me</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">© <span id="yr">2026</span> Lily Coash-Johnson · Lincoln, Nebraska</div>
+  </footer>
+
+  <script>
+    (function () {
+      try { document.getElementById('yr').textContent = new Date().getFullYear(); } catch (e) {}
+      var els = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('in'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12 });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+</body>
+</html>
