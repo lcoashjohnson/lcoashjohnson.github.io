@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A Daily Nebraskan game: match campaign positions to newly elected 2026 U.S. senators.">
+<title>Senate Connections</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Open+Sans:wght@400;600;700&family=Roboto+Condensed:wght@500;700&display=swap">
+<style>
+html,body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+/* Layout: Daily Nebraskan masthead + dark nav strip, red section bar, then a 4x4 Connections board; party color appears only once a group is solved. */
+:root{
+  --bg:#ffffff; --fg:#333333; --muted:#6b6566; --rule:#e3dfdf;
+  --dn-red:#ba1f1f; --dn-red-edge:#cb5757; --nav:#333333; --nav-fg:#ffffff;
+  --tile:#efecea; --tile-fg:#2a2626; --tile-sel:#4a4444; --tile-sel-fg:#ffffff;
+  --dem:#22558f; --dem-2:#3f78b8; --rep:#b3282d; --rep-2:#d4523f; --on-party:#ffffff;
+  --panel:#f7f5f4;
+  --f-mast:"Archivo Black","Arial Black",Arial,sans-serif;
+  --f-body:"Open Sans",Arial,sans-serif;
+  --f-cond:"Roboto Condensed","Arial Narrow",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#18171a; --fg:#e9e6e6; --muted:#a8a1a1; --rule:#353235;
+  --nav:#0e0d0f; --tile:#2c2a2d; --tile-fg:#efeaea; --tile-sel:#d9d4d4; --tile-sel-fg:#18171a;
+  --dem:#2d64a6; --dem-2:#4a82c4; --rep:#b8343a; --rep-2:#cf5a47; --panel:#212024; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#18171a; --fg:#e9e6e6; --muted:#a8a1a1; --rule:#353235;
+  --nav:#0e0d0f; --tile:#2c2a2d; --tile-fg:#efeaea; --tile-sel:#d9d4d4; --tile-sel-fg:#18171a;
+  --dem:#2d64a6; --dem-2:#4a82c4; --rep:#b8343a; --rep-2:#cf5a47; --panel:#212024; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.util{border-bottom:1px solid var(--rule);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.util .wrap{display:flex;justify-content:space-between;gap:12px;padding-block:8px}
+.util .tag{display:inline-flex;gap:6px;align-items:center}
+.util .tag i{width:8px;height:8px;border-radius:2px;display:inline-block}
+.mast{text-align:center;padding-block:22px 18px}
+.mast .wordmark{font-family:var(--f-mast);font-size:clamp(28px,7vw,44px);letter-spacing:-.01em;line-height:1;color:var(--fg)}
+.mast .tagline{margin-top:6px;font-size:12px;color:var(--muted)}
+nav.strip{background:var(--nav);border-top:3px solid var(--dn-red)}
+nav.strip .wrap{display:flex;gap:18px;padding-block:9px;color:var(--nav-fg);font-weight:700;font-size:14px;flex-wrap:wrap}
+nav.strip span.on{border-bottom:2px solid var(--dn-red-edge)}
+main{padding-block:22px 48px}
+.block-title{background:var(--dn-red);border-bottom:3px solid var(--dn-red-edge);padding:6px 12px}
+.block-title h1{margin:0;font-family:var(--f-cond);font-weight:700;font-size:24px;color:#fff;line-height:1.2}
+.dek{margin:14px 0 4px;font-size:16px;text-wrap:pretty}
+.byline{font-size:12px;color:var(--muted);margin-bottom:18px}
+.boards{display:flex;gap:8px;margin:6px 0 14px;flex-wrap:wrap}
+.boards button{font-family:var(--f-cond);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.05em;border:2px solid var(--fg);background:transparent;color:var(--fg);padding:6px 14px;border-radius:999px;cursor:pointer}
+.boards button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.rule-line{font-size:14px;margin:0 0 12px}
+.rule-line b{font-weight:700}
+.rule-line .d{color:var(--dem-2);font-weight:700}.rule-line .r{color:var(--rep-2);font-weight:700}
+#grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.tile{min-height:78px;border:0;border-radius:6px;background:var(--tile);color:var(--tile-fg);font-family:var(--f-cond);font-weight:700;font-size:15px;line-height:1.15;text-transform:uppercase;padding:8px 6px;cursor:pointer;transition:background .12s,transform .12s;text-wrap:balance;overflow-wrap:anywhere}
+.tile:hover{filter:brightness(.96)}
+.tile[aria-pressed="true"]{background:var(--tile-sel);color:var(--tile-sel-fg)}
+.tile:focus-visible,.boards button:focus-visible,.ctrl button:focus-visible{outline:3px solid var(--dn-red-edge);outline-offset:2px}
+.solved{grid-column:1/-1;border-radius:6px;padding:12px 14px;color:var(--on-party);text-align:center;animation:pop .3s ease-out}
+.solved.D1{background:var(--dem)}.solved.D2{background:var(--dem-2)}.solved.R1{background:var(--rep)}.solved.R2{background:var(--rep-2)}
+.solved .who{font-family:var(--f-cond);font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.03em}
+.solved .items{font-size:13px;margin-top:2px}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@keyframes pop{from{transform:scale(.97);opacity:.6}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.shake,.solved{animation:none}.tile{transition:none}}
+.status{display:flex;justify-content:center;align-items:center;gap:10px;margin:16px 0 4px;font-size:14px}
+.dots{display:flex;gap:6px}.dots i{width:12px;height:12px;border-radius:50%;background:var(--tile-sel);display:inline-block}
+.dots i.used{background:var(--rule)}
+#msg{min-height:24px;text-align:center;font-weight:600;font-size:14px;margin:4px 0}
+.ctrl{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.ctrl button{font-family:var(--f-body);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.04em;padding:10px 18px;border-radius:999px;border:1.5px solid var(--fg);background:transparent;color:var(--fg);cursor:pointer}
+.ctrl button.primary{background:var(--fg);color:var(--bg)}
+.ctrl button:disabled{opacity:.35;cursor:default}
+#learn{margin-top:34px}
+#learn h2{font-family:var(--f-cond);font-size:22px;margin:0 0 4px;border-bottom:3px solid var(--fg);padding-bottom:4px}
+.card{border-top:1px solid var(--rule);padding-block:16px;display:grid;grid-template-columns:6px 1fr;gap:14px}
+.card .bar{border-radius:3px}.card.D .bar{background:var(--dem)}.card.R .bar{background:var(--rep)}
+.card h3{margin:0;font-family:var(--f-cond);font-size:20px;line-height:1.2}
+.card .meta{font-size:13px;color:var(--muted);margin:2px 0 8px}
+.card ul{margin:0;padding-left:18px;display:grid;gap:6px}
+.card li{font-size:14px;min-width:0}
+.card li b{font-weight:700}
+.card a{color:inherit;text-decoration-color:var(--dn-red-edge);text-underline-offset:2px;font-size:12px;white-space:nowrap}
+.note{margin-top:28px;padding:14px 16px;background:var(--panel);border-left:4px solid var(--dn-red);font-size:13px;color:var(--fg)}
+.note p{margin:0 0 8px}.note p:last-child{margin:0}
+footer{background:var(--nav);color:#fff;font-size:12px}
+footer .wrap{padding-block:16px}
+@media (max-width:480px){.tile{font-size:12.5px;min-height:72px;padding:6px 4px}#grid{gap:6px}}
+</style>
+</head>
+<body>
+<div class="util"><div class="wrap"><span>Elections · Games</span><span class="tag"><i style="background:var(--dem)"></i>Dem <i style="background:var(--rep)"></i>GOP</span></div></div>
+<header class="mast wrap"><div class="wordmark">The Daily Nebraskan</div><div class="tagline">Student voice of the University of Nebraska-Lincoln since 1901</div></header>
+<nav class="strip" aria-label="Sections"><div class="wrap"><span>News</span><span class="on">Elections</span><span>Games</span></div></nav>
+
+<main class="wrap">
+  <div class="block-title"><h1>Senate Connections</h1></div>
+  <p class="dek">Seventeen new senators were elected on Nov. 3. Can you tell who backs what? Sort 16 campaign positions into four groups, one group per newly elected senator.</p>
+  <div class="byline">Positions drawn from campaign platforms, interviews and news coverage · Updated Nov. 11, 2026</div>
+
+  <div class="boards" role="group" aria-label="Choose a board">
+    <button id="b0" aria-pressed="true">Board 1</button>
+    <button id="b1" aria-pressed="false">Board 2</button>
+  </div>
+  <p class="rule-line">Each board has <b>two <span class="d">Democrats</span> and two <span class="r">Republicans</span></b>. Pick four tiles that belong to the same senator, then submit. Four mistakes allowed.</p>
+
+  <div id="grid" aria-live="polite"></div>
+  <div class="status"><span>Mistakes left</span><span class="dots" id="dots"></span></div>
+  <div id="msg" role="status"></div>
+  <div class="ctrl">
+    <button id="shuffle">Shuffle</button>
+    <button id="clear">Deselect all</button>
+    <button id="submit" class="primary">Submit</button>
+  </div>
+  <div class="ctrl" style="margin-top:10px"><button id="reveal">Reveal answers</button></div>
+
+  <section id="learn" hidden>
+    <h2>Meet the senators</h2>
+    <div id="cards"></div>
+  </section>
+
+  <div class="note">
+    <p><b>How we built this.</b> The 17 senators-elect called by the AP are 11 Democrats (Andrews, Brown, Cooper, El-Sayed, Flanagan, Hamilton, Jackson, Pappas, Stratton, Talarico, Turek) and 6 Republicans (Alme, Barr, Hageman, Hern, Letlow, Moore). Sherrod Brown is returning after a previous Senate term. Races in Alaska and Mississippi were still uncalled, and all results are unofficial until states certify them.</p>
+    <p>Every tile is a position the senator stated or championed during the 2026 campaign, linked to its source below. A tile describes what the senator supports; it is not an endorsement by the Daily Nebraskan.</p>
+  </div>
+</main>
+<footer><div class="wrap">The Daily Nebraskan · Lincoln, Nebraska</div></footer>
+
+<script>
+const BOARDS = [
+ [
+  {id:"talarico", name:"James Talarico", party:"D", tone:"D1", meta:"Democrat, Texas · Flipped the seat, defeating Ken Paxton. First Texas Democrat elected to the Senate since 1988.",
+   items:[
+    ["Universal child care","Part of his “New American Dream” economic plan, alongside paid family leave.","https://www.texastribune.org/2026/08/05/texas-senate-james-talarico-economic-agenda-ken-paxton/","Texas Tribune"],
+    ["An “AI dividend” for every citizen","Would give each U.S. citizen a stake in American AI companies.","https://www.texastribune.org/2026/08/05/texas-senate-james-talarico-economic-agenda-ken-paxton/","Texas Tribune"],
+    ["Cancel medical debt","Listed among the cost-of-living proposals in his economic agenda.","https://www.texastribune.org/2026/08/05/texas-senate-james-talarico-economic-agenda-ken-paxton/","Texas Tribune"],
+    ["Ban congressional stock trading","Part of an anti-corruption package that would also ban super PACs and corporate PACs.","https://www.texastribune.org/2026/08/05/texas-senate-james-talarico-economic-agenda-ken-paxton/","Texas Tribune"]]},
+  {id:"andrews", name:"Annie Andrews", party:"D", tone:"D2", meta:"Democrat, South Carolina · Pediatrician who flipped the seat, defeating appointed Sen. Darline Graham Nordone.",
+   items:[
+    ["Universal background checks","Her campaign site backs universal background checks while saying she has no interest in taking guns from law-abiding owners.","https://ontheissues.org/Domestic/Annie_Andrews_Gun_Control.htm","OnTheIssues"],
+    ["Keep rural hospitals open","Toured rural South Carolina pitching a plan to lower health costs and protect rural hospitals.","https://www.live5news.com/2026/10/06/democratic-senate-candidate-andrews-tours-rural-south-carolina-pitches-health-care-plan/","Live 5 News"],
+    ["Protect reproductive freedom","One of six priorities in the platform she released in January 2026.","https://drannieandrews.com/dr-annie-andrews-unveils-policy-priorities-centered-on-affordability-public-health-and-accountability/","Andrews campaign"],
+    ["No more endless wars","Also one of her six platform priorities.","https://drannieandrews.com/dr-annie-andrews-unveils-policy-priorities-centered-on-affordability-public-health-and-accountability/","Andrews campaign"]]},
+  {id:"hageman", name:"Harriet Hageman", party:"R", tone:"R1", meta:"Republican, Wyoming · Wyoming’s U.S. House member since 2023, succeeding retiring Sen. Cynthia Lummis.",
+   items:[
+    ["Back Wyoming’s fossil-fuel industry","Continued support for fossil fuels led the priorities in her launch video.","https://www.yahoo.com/news/articles/rep-hageman-declares-candidacy-lummis-024700274.html","Wyoming Tribune Eagle"],
+    ["Fund border security","Another priority named in her campaign launch.","https://www.yahoo.com/news/articles/rep-hageman-declares-candidacy-lummis-024700274.html","Wyoming Tribune Eagle"],
+    ["Deport undocumented immigrants","Listed among her launch priorities.","https://www.yahoo.com/news/articles/rep-hageman-declares-candidacy-lummis-024700274.html","Wyoming Tribune Eagle"],
+    ["State control of natural resources","Pledged to defend Wyoming’s ability to access, manage and use its own natural resources.","https://www.audacy.com/kdkaradio/news/politics/harriet-hageman-announces-run-for-wyoming-senate-seat","AP via Audacy"]]},
+  {id:"moore", name:"Barry Moore", party:"R", tone:"R2", meta:"Republican, Alabama · U.S. House member and Freedom Caucus member, succeeding Sen. Tommy Tuberville.",
+   items:[
+    ["Lower taxes","Named as a core campaign priority.","https://abc3340.com/news/local/barry-moore-wins-alabamas-open-us-senate-race","ABC 33/40"],
+    ["A smaller federal government","Named as a core campaign priority.","https://abc3340.com/news/local/barry-moore-wins-alabamas-open-us-senate-race","ABC 33/40"],
+    ["Cut spending to fight inflation","Argued federal spending drove up prices for groceries, housing and health care.","https://abc3340.com/news/local/barry-moore-wins-alabamas-open-us-senate-race","ABC 33/40"],
+    ["Support law enforcement","Listed with border security, veterans and gun rights among his priorities.","https://abc3340.com/news/local/barry-moore-wins-alabamas-open-us-senate-race","ABC 33/40"]]}
+ ],
+ [
+  {id:"elsayed", name:"Abdul El-Sayed", party:"D", tone:"D1", meta:"Democrat, Michigan · Epidemiologist and former Detroit health director, defeating Mike Rogers for an open seat.",
+   items:[
+    ["Medicare for All","His signature issue; he argues one public plan would cost less than the current system.","https://www.michiganpublic.org/politics-government/2026-08-27/el-sayed-running-for-us-senate-promotes-medicare-for-all-at-ann-arbor-rally","Michigan Public"],
+    ["Auto-enroll every newborn in Medicare","His updated plan enrolls everyone at birth while allowing supplemental private coverage.","https://michiganadvance.com/2026/01/30/mcmorrow-says-el-sayed-flipped-on-medicare-for-all-experts-say-its-more-complex/","Michigan Advance"],
+    ["Make it easier to form a union","Promised to make joining or forming a union easier.","https://www.miningjournal.net/news/front-page-news/2025/10/senatorial-candidates-abdul-el-sayed/","Mining Journal"],
+    ["Get money out of politics","The first line of his campaign slogan.","https://www.miningjournal.net/news/front-page-news/2025/10/senatorial-candidates-abdul-el-sayed/","Mining Journal"]]},
+  {id:"pappas", name:"Chris Pappas", party:"D", tone:"D2", meta:"Democrat, New Hampshire · Four-term House member, defeating former Sen. John E. Sununu for an open seat.",
+   items:[
+    ["Extend ACA premium tax credits","His near-term fix for health costs after the credits expired.","https://www.thedartmouth.com/article/2026/04/u-s-rep-chris-pappas-emphasizes-housing-health-care-and-energy-costs-in-senate-bid","The Dartmouth"],
+    ["Tax credits for first-time homebuyers","Part of his plan to ease a housing supply shortage.","https://www.thedartmouth.com/article/2026/04/u-s-rep-chris-pappas-emphasizes-housing-health-care-and-energy-costs-in-senate-bid","The Dartmouth"],
+    ["Clean energy to cut power bills","Wants lower energy bills through clean energy development and direct relief.","https://www.thedartmouth.com/article/2026/04/u-s-rep-chris-pappas-emphasizes-housing-health-care-and-energy-costs-in-senate-bid","The Dartmouth"],
+    ["Deport violent offenders here unlawfully","Defended his vote for the Laken Riley Act while criticizing mass deportation efforts.","https://www.thedartmouth.com/article/2026/04/u-s-rep-chris-pappas-emphasizes-housing-health-care-and-energy-costs-in-senate-bid","The Dartmouth"]]},
+  {id:"barr", name:"Andy Barr", party:"R", tone:"R1", meta:"Republican, Kentucky · Seven-term House member, succeeding Sen. Mitch McConnell after defeating Charles Booker.",
+   items:[
+    ["Bring back Kentucky coal","His campaign published a plan for Kentucky coal to create jobs and lower energy costs.","https://barrforsenate.com/issues/","Barr campaign"],
+    ["End DEI programs","His first Senate campaign ad attacked diversity, equity and inclusion initiatives.","https://www.pbs.org/video/andy-barr-releases-first-us-senate-campaign-ad-r6jgn5","KET / PBS"],
+    ["Champion the One Big Beautiful Bill","Ran on helping pass President Trump’s 2025 tax and spending law.","https://barrforsenate.com/press-release/barr-and-trump-fighting-for-kentucky/","Barr campaign"],
+    ["“Back the Blue”","Pledged resources and protection for police in a campaign letter to law enforcement.","https://barrforsenate.com/wp-content/uploads/2026/03/Andy-Barr-Back-The-Blue.pdf","Barr campaign"]]},
+  {id:"letlow", name:"Julia Letlow", party:"R", tone:"R2", meta:"Republican, Louisiana · House member who unseated Sen. Bill Cassidy in the primary, then defeated Jamie Davis.",
+   items:[
+    ["Cheaper flood insurance","Said she would work on reforms to make flood insurance more affordable.","https://talk1073.com/2026/06/24/julia-letlow-discusses-flood-recovery-trump-support-and-senate-goals-before-louisiana-election/","Talk 107.3"],
+    ["A Parents’ Bill of Rights","Calls the bill, passed by the House in 2023, her proudest accomplishment.","https://www.wwno.org/politics/2026-06-27/letlow-davis-advance-in-louisianas-u-s-senate-race","WWNO"],
+    ["“100% pro-life”","The first issue listed on her campaign website.","https://loyolamaroon.com/10046278/showcase/julia-letlow-u-s-representative-from-louisiana-launches-campaign-for-senate/","The Loyola Maroon"],
+    ["Secure the border","One of the main focuses of her Senate campaign.","https://www.wafb.com/2026/11/04/julia-letlow-projected-win-louisiana-senate-race/","WAFB"]]}
+ ]
+];
+
+const $=s=>document.querySelector(s);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let cur=0, S=[];
+function fresh(b){const tiles=[];BOARDS[b].forEach(g=>g.items.forEach(it=>tiles.push({t:it[0],g:g.id})));return {tiles:shuffle(tiles),solved:[],sel:new Set(),mistakes:4,guesses:new Set(),over:false};}
+S=[fresh(0),fresh(1)];
+const grp=(b,id)=>BOARDS[b].find(g=>g.id===id);
+
+function render(){
+  const st=S[cur], grid=$("#grid"); grid.innerHTML="";
+  st.solved.forEach(id=>{const g=grp(cur,id);const d=document.createElement("div");d.className="solved "+g.tone;
+    d.innerHTML=`<div class="who">${g.name} (${g.party}-${stateAbbr(g.meta)})</div><div class="items">${g.items.map(i=>i[0]).join(" · ")}</div>`;grid.appendChild(d)});
+  st.tiles.filter(t=>!st.solved.includes(t.g)).forEach(t=>{const b=document.createElement("button");b.className="tile";b.textContent=t.t;
+    b.setAttribute("aria-pressed",st.sel.has(t.t)?"true":"false");b.disabled=st.over;
+    b.onclick=()=>{if(st.sel.has(t.t))st.sel.delete(t.t);else if(st.sel.size<4)st.sel.add(t.t);render()};grid.appendChild(b)});
+  $("#dots").innerHTML=[0,1,2,3].map(i=>`<i class="${i<st.mistakes?"":"used"}"></i>`).join("");
+  $("#submit").disabled=st.sel.size!==4||st.over; $("#clear").disabled=!st.sel.size||st.over; $("#shuffle").disabled=st.over;
+  $("#reveal").hidden=st.over;
+  $("#b0").setAttribute("aria-pressed",cur===0);$("#b1").setAttribute("aria-pressed",cur===1);
+  renderLearn();
+}
+function stateAbbr(meta){const m={Texas:"TX","South Carolina":"SC",Wyoming:"WY",Alabama:"AL",Michigan:"MI","New Hampshire":"NH",Kentucky:"KY",Louisiana:"LA"};const s=meta.split(" · ")[0].split(", ")[1];return m[s]||s}
+function say(t){$("#msg").textContent=t}
+function submit(){
+  const st=S[cur]; const picks=[...st.sel]; const key=picks.slice().sort().join("|");
+  if(st.guesses.has(key)){say("You already tried that group.");return}
+  st.guesses.add(key);
+  const counts={};picks.forEach(p=>{const g=st.tiles.find(t=>t.t===p).g;counts[g]=(counts[g]||0)+1});
+  const top=Math.max(...Object.values(counts));
+  if(top===4){const id=Object.keys(counts)[0];st.solved.push(id);st.sel.clear();const g=grp(cur,id);
+    say(`Correct: ${g.name}.`);if(st.solved.length===4){st.over=true;say(st.mistakes===4?"Perfect board. Read up on all four below.":"Board solved. Read up on all four below.")}}
+  else{st.mistakes--;say(top===3?"One away…":"Not quite.");
+    document.querySelectorAll('.tile[aria-pressed="true"]').forEach(el=>{el.classList.remove("shake");void el.offsetWidth;el.classList.add("shake")});
+    if(st.mistakes===0){endReveal(st);say("Out of guesses. Here are the groups.");}
+    else{render();return}}
+  render();
+}
+function endReveal(st){st.over=true;st.sel.clear();BOARDS[cur].forEach(g=>{if(!st.solved.includes(g.id))st.solved.push(g.id)})}
+function renderLearn(){
+  const st=S[cur]; $("#learn").hidden=!st.over; if(!st.over)return;
+  $("#cards").innerHTML=BOARDS[cur].map(g=>`<article class="card ${g.party}"><div class="bar"></div><div style="min-width:0">
+   <h3>${g.name}</h3><div class="meta">${g.meta}</div>
+   <ul>${g.items.map(i=>`<li><b>${i[0]}.</b> ${i[1]} <a href="${i[2]}" target="_blank" rel="noopener">${i[3]} ↗</a></li>`).join("")}</ul></div></article>`).join("");
+}
+$("#submit").onclick=submit;
+$("#clear").onclick=()=>{S[cur].sel.clear();say("");render()};
+$("#shuffle").onclick=()=>{shuffle(S[cur].tiles);render()};
+$("#reveal").onclick=()=>{endReveal(S[cur]);say("Answers revealed.");render()};
+$("#b0").onclick=()=>{cur=0;say("");render()};
+$("#b1").onclick=()=>{cur=1;say("");render()};
+render();
+</script>
+</body>
+</html>
