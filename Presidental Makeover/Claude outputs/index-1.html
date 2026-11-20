@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Congressional Makeover</title>
+<style>
+:root{--pink:#ff5fae;--purple:#7b4dff;--ink:#3a2340;--cream:#fff7fb}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 10%,#ffe3f3,#f7c6ff 45%,#c7b8ff);color:var(--ink);min-height:100vh}
+header{text-align:center;padding:14px 10px 2px}
+h1{margin:0;font-size:clamp(24px,5vw,40px);color:#fff;text-shadow:0 3px 0 var(--pink),0 6px 0 var(--purple),0 10px 18px rgba(123,77,255,.35);letter-spacing:1px;line-height:1.2}
+.sub{font-size:14px;margin-top:8px;opacity:.85}
+.wrap{max-width:1000px;margin:0 auto;padding:10px;display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:14px;align-items:start}
+@media(max-width:800px){.wrap{grid-template-columns:1fr}}
+
+/* stage */
+.stage{position:relative;border-radius:28px;overflow:hidden;border:7px solid #fff;box-shadow:0 14px 34px rgba(123,77,255,.35),inset 0 0 0 2px #ffd6ec;aspect-ratio:400/480;touch-action:none;cursor:none;user-select:none;-webkit-user-select:none;background:#ffe4f1}
+.stage svg.layer{position:absolute;inset:0;width:100%;height:100%}
+#bg{z-index:1}
+#face{z-index:2}
+#pressBg{display:none}
+.stage.press #spaBg{display:none}
+.stage.press #pressBg{display:inline}
+.podium{position:absolute;left:27%;width:46%;bottom:-2%;height:19%;z-index:4;display:none;border-radius:12px 12px 0 0;background:linear-gradient(90deg,#5e3a1f,#9a6a40 30%,#b07c4c 50%,#9a6a40 70%,#5e3a1f);border:3px solid #3b2412;color:#ffe9a8;text-align:center;font-weight:bold;letter-spacing:3px;font-size:clamp(10px,2.2vw,15px);padding-top:3.5%;box-shadow:0 -6px 18px rgba(0,0,0,.35)}
+.podium::before{content:"";position:absolute;left:50%;top:-30%;width:5px;height:32%;background:linear-gradient(90deg,#222,#666,#222);transform:translateX(-50%)}
+.podium::after{content:"";position:absolute;left:50%;top:-44%;width:16px;height:22px;border-radius:8px;background:radial-gradient(circle at 35% 30%,#888,#111);transform:translateX(-50%)}
+.stage.press .podium{display:block}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:6;pointer-events:none}
+.flash.go{animation:flash .35s ease-out}
+@keyframes flash{0%{opacity:.8}100%{opacity:0}}
+
+.bubble{position:absolute;left:3%;top:8%;max-width:33%;background:#fff;border:3px solid var(--ink);border-radius:16px;padding:7px 10px;font-size:clamp(10px,2.1vw,14px);font-weight:bold;z-index:5;box-shadow:3px 3px 0 var(--pink);transition:opacity .25s,transform .25s;pointer-events:none}
+.bubble::after{content:"";position:absolute;right:-15px;top:60%;border:8px solid transparent;border-left:12px solid var(--ink)}
+.bubble.hide{opacity:0;transform:scale(.85)}
+
+.toolcursor{position:absolute;z-index:7;pointer-events:none;width:clamp(56px,13vw,86px);display:none}
+.toolcursor.on{display:block}
+.toolcursor .in{transition:transform .12s;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
+.toolcursor.active .in{transform:scale(1.1) rotate(-8deg)}
+.toolcursor svg{display:block;width:100%;height:auto}
+
+.fx{position:absolute;pointer-events:none;z-index:6;transform:translate(-50%,-50%)}
+.sparkle{font-size:22px;animation:rise .8s ease-out forwards}
+@keyframes rise{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-170%) scale(1.3)}}
+.mist{width:12px;height:12px;border-radius:50%;background:radial-gradient(rgba(246,140,60,.85),rgba(246,140,60,0) 70%);animation:mist .7s ease-out forwards}
+@keyframes mist{0%{opacity:.95}100%{opacity:0;transform:translate(-50%,-50%) scale(3)}}
+.cream{width:14px;height:14px;border-radius:50%;background:radial-gradient(#ffe6cc,rgba(255,220,190,0) 70%);animation:mist .5s ease-out forwards}
+.air{width:16px;height:6px;border-radius:6px;background:rgba(255,255,255,.85);animation:blow .5s ease-out forwards}
+@keyframes blow{0%{opacity:.9}100%{opacity:0;transform:translate(-50%,-260%) scaleX(2)}}
+.laser{width:18px;height:18px;border-radius:50%;background:radial-gradient(#fff,#7ef7ff 35%,rgba(126,247,255,0) 70%);animation:mist .4s ease-out forwards}
+.drop{width:10px;height:10px;border-radius:50%;background:radial-gradient(#fff,#ff7aa8 50%,rgba(255,122,168,0) 75%);animation:mist .6s ease-out forwards}
+.puff{width:70px;height:70px;border-radius:50%;background:radial-gradient(#fff,rgba(255,255,255,0) 70%);animation:mist 1s ease-out forwards}
+.confetti{width:9px;height:14px;border-radius:2px;animation:fall 2.2s linear forwards}
+@keyframes fall{0%{transform:translate(-50%,-50%) rotate(0)}100%{transform:translate(-50%,650%) rotate(720deg);opacity:0}}
+
+/* privacy curtain */
+.curtain{position:absolute;inset:0;z-index:8;display:none;cursor:pointer}
+.curtain.on{display:block}
+.drape{position:absolute;top:0;bottom:0;width:51%;background:repeating-linear-gradient(90deg,#a92d6b 0,#e0559a 14px,#f27bb4 22px,#e0559a 30px,#a92d6b 44px);box-shadow:inset 0 -30px 40px rgba(0,0,0,.25);transition:transform 1s ease-in-out}
+.drape.l{left:0;border-right:3px solid #8e1f58}
+.drape.r{right:0;border-left:3px solid #8e1f58}
+.curtain.open .drape.l{transform:translateX(-102%)}
+.curtain.open .drape.r{transform:translateX(102%)}
+.rod{position:absolute;top:0;left:0;right:0;height:18px;background:linear-gradient(#ffe08a,#d9a441 60%,#8a6215);z-index:1}
+.cnote{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);background:#fff;border:3px solid var(--ink);border-radius:16px;padding:12px 14px;text-align:center;font-weight:bold;z-index:2;width:78%;transition:opacity .3s;box-shadow:4px 4px 0 var(--pink)}
+.cnote small{display:block;font-weight:normal;margin-top:4px;opacity:.8}
+.curtain.open .cnote{opacity:0}
+.curtain.shake .drape{animation:wob .3s}
+@keyframes wob{0%,100%{transform:skewX(0)}30%{transform:skewX(2deg)}70%{transform:skewX(-2deg)}}
+
+/* panel */
+.panel{background:var(--cream);border:5px solid #fff;border-radius:24px;padding:14px;box-shadow:0 10px 30px rgba(123,77,255,.2)}
+.tray{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px;padding:8px;background:linear-gradient(#ffe3f1,#ffd0e8);border-radius:16px;box-shadow:inset 0 2px 6px rgba(160,40,110,.15)}
+.slot{position:relative;aspect-ratio:1;background:#fff;border-radius:12px;padding:5px;box-shadow:0 2px 0 #f1b6d5;opacity:.45;transition:.2s}
+.slot svg{width:100%;height:100%}
+.slot.cur{opacity:1;outline:3px solid var(--pink);transform:scale(1.08);box-shadow:0 0 14px rgba(255,95,174,.6)}
+.slot.done{opacity:1}
+.slot.done::after{content:"✓";position:absolute;right:-4px;top:-6px;background:#2fbf6a;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;display:grid;place-items:center;font-weight:bold}
+.stepno{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--purple);font-weight:bold}
+.panel h2{margin:4px 0 6px;font-size:22px}
+.instr{font-size:15px;line-height:1.4;min-height:62px}
+.toolbtn{display:flex;align-items:center;gap:10px;width:100%;border:3px dashed var(--pink);background:#fff;border-radius:16px;padding:8px 10px;margin:10px 0;font-size:15px;font-weight:bold}
+.toolbtn .em{width:52px;height:52px;flex:none}
+.toolbtn .em svg{width:100%;height:100%}
+.bar{height:16px;background:#f1e3ff;border-radius:99px;overflow:hidden;border:2px solid #fff;box-shadow:inset 0 1px 3px rgba(0,0,0,.1)}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--purple));transition:width .2s}
+.btn{display:block;width:100%;margin-top:12px;border:0;border-radius:16px;padding:13px;font-size:17px;font-weight:bold;color:#fff;background:linear-gradient(var(--pink),#e53e93);box-shadow:0 5px 0 #b02a70;cursor:pointer;font-family:inherit}
+.btn:disabled{background:#d9c8e6;box-shadow:0 5px 0 #b6a3c6;cursor:not-allowed}
+.btn:not(:disabled):active{transform:translateY(3px);box-shadow:0 2px 0 #b02a70}
+.small{display:flex;justify-content:space-between;margin-top:12px;font-size:13px}
+.small button{background:none;border:0;color:var(--purple);font-weight:bold;cursor:pointer;font-family:inherit;font-size:13px}
+.results{display:none}
+.results.on{display:block}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.ba div{background:#fff;border-radius:14px;padding:4px;text-align:center;font-size:12px;font-weight:bold}
+.ba img{width:100%;display:block;border-radius:10px;background:linear-gradient(#ffeaf4,#ffd6ea);aspect-ratio:400/480}
+.ba img:not([src]){visibility:hidden}
+.stats{font-size:13px;line-height:1.6;margin:0;padding-left:18px}
+footer{text-align:center;font-size:12px;opacity:.7;padding:10px 10px 20px}
+</style>
+</head>
+<body>
+<header>
+  <h1>💄 Congressional Makeover 💄</h1>
+  <div class="sub">An ASMR Makeover Studio parody · The press conference starts in 10 minutes. The Senator has not been camera-ready since 1971.</div>
+</header>
+
+<div class="wrap">
+  <div class="stage" id="stage">
+    <!-- background -->
+    <svg id="bg" class="layer" viewBox="0 0 400 480" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="wallG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9f3"/><stop offset="1" stop-color="#ffc9e2"/></linearGradient>
+        <radialGradient id="mirrorG" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="#ffffff"/><stop offset=".7" stop-color="#fbe9f7"/><stop offset="1" stop-color="#ead2ef"/></radialGradient>
+        <linearGradient id="goldG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1b8"/><stop offset=".5" stop-color="#e2b24c"/><stop offset="1" stop-color="#a87a1c"/></linearGradient>
+        <radialGradient id="bulbG"><stop offset="0" stop-color="#fffff4"/><stop offset=".5" stop-color="#fff5b0"/><stop offset="1" stop-color="#ffd86a"/></radialGradient>
+        <radialGradient id="glowG"><stop offset="0" stop-color="#fff7c0" stop-opacity=".9"/><stop offset="1" stop-color="#fff7c0" stop-opacity="0"/></radialGradient>
+        <linearGradient id="curtG" x1="0" x2="1"><stop offset="0" stop-color="#16204a"/><stop offset=".5" stop-color="#2c3c86"/><stop offset="1" stop-color="#16204a"/></linearGradient>
+      </defs>
+      <g id="spaBg">
+        <rect width="400" height="480" fill="url(#wallG)"/>
+        <g opacity=".35" fill="#fff">
+          <circle cx="30" cy="60" r="18"/><circle cx="370" cy="90" r="24"/><circle cx="350" cy="300" r="14"/><circle cx="40" cy="260" r="12"/>
+        </g>
+        <ellipse cx="200" cy="215" rx="178" ry="205" fill="url(#goldG)"/>
+        <ellipse cx="200" cy="215" rx="164" ry="191" fill="url(#mirrorG)"/>
+        <path d="M80 90 Q130 40 190 34" stroke="#fff" stroke-width="10" stroke-linecap="round" fill="none" opacity=".7"/>
+        <g id="bulbs"></g>
+      </g>
+      <g id="pressBg">
+        <rect width="400" height="480" fill="url(#curtG)"/>
+        <g stroke="#0e1636" stroke-width="3" opacity=".5">
+          <path d="M40 0 V480 M90 0 V480 M140 0 V480 M260 0 V480 M310 0 V480 M360 0 V480"/>
+        </g>
+        <circle cx="200" cy="215" r="150" fill="#1d2b66" stroke="#e2b24c" stroke-width="6"/>
+        <circle cx="200" cy="215" r="132" fill="none" stroke="#e2b24c" stroke-width="2" stroke-dasharray="4 6"/>
+        <text x="200" y="40" fill="#ffe27a" font-family="Trebuchet MS, sans-serif" font-weight="bold" font-size="18" text-anchor="middle" letter-spacing="3">★ PRESS CONFERENCE ★</text>
+      </g>
+    </svg>
+
+    <!-- character -->
+    <svg id="face" class="layer" viewBox="0 0 400 480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <style>
+          .hint{fill:none;stroke:#ff5fae;stroke-width:3;stroke-dasharray:6 6;animation:pulse 1s ease-in-out infinite alternate}
+          @keyframes pulse{from{opacity:.25}to{opacity:.95}}
+          .stink path{animation:stinky 1.8s ease-in-out infinite}
+          @keyframes stinky{0%{transform:translateY(10px);opacity:0}40%{opacity:.9}100%{transform:translateY(-18px);opacity:0}}
+        </style>
+        <radialGradient id="skinG" cx=".42" cy=".36" r=".72">
+          <stop id="sk0" offset="0" stop-color="#eeeae0"/><stop id="sk1" offset=".62" stop-color="#d9d4c4"/><stop id="sk2" offset="1" stop-color="#ada392"/>
+        </radialGradient>
+        <radialGradient id="lipG" cx=".5" cy=".3" r=".8">
+          <stop id="lp0" offset="0" stop-color="#e0bdb4"/><stop id="lp1" offset="1" stop-color="#b98e84"/>
+        </radialGradient>
+        <radialGradient id="irisG"><stop offset="0" stop-color="#9fd3ff"/><stop offset=".6" stop-color="#3d7fd6"/><stop offset="1" stop-color="#1d3f7a"/></radialGradient>
+        <radialGradient id="eyeG" cx=".5" cy=".4"><stop offset=".6" stop-color="#ffffff"/><stop offset="1" stop-color="#e3dde0"/></radialGradient>
+        <radialGradient id="bagG"><stop offset="0" stop-color="#7d5a78" stop-opacity=".55"/><stop offset="1" stop-color="#7d5a78" stop-opacity="0"/></radialGradient>
+        <radialGradient id="spotG"><stop offset="0" stop-color="#7c4f33"/><stop offset=".7" stop-color="#93633f" stop-opacity=".85"/><stop offset="1" stop-color="#93633f" stop-opacity="0"/></radialGradient>
+        <radialGradient id="blushG"><stop offset="0" stop-color="#ff6f8f" stop-opacity=".6"/><stop offset="1" stop-color="#ff6f8f" stop-opacity="0"/></radialGradient>
+        <linearGradient id="suitG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b4a80"/><stop offset="1" stop-color="#1b2347"/></linearGradient>
+        <linearGradient id="hairG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf27a"/><stop offset=".5" stop-color="#ecd52c"/><stop offset="1" stop-color="#c7a40b"/></linearGradient>
+        <linearGradient id="tapeG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf3dc"/><stop offset="1" stop-color="#e6d6a8"/></linearGradient>
+        <linearGradient id="bowG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a77bff"/><stop offset="1" stop-color="#5a2fd1"/></linearGradient>
+        <g id="hand">
+          <path d="M26 480 L30 412 Q55 400 82 412 L86 480Z" fill="url(#suitG)"/>
+          <rect x="28" y="402" width="56" height="13" rx="5" fill="#fff" stroke="#d5d9e4" stroke-width="1.5"/>
+          <g fill="url(#skinG)" stroke="rgba(110,70,50,.55)" stroke-width="2">
+            <rect x="24" y="322" width="17" height="52" rx="8.5"/>
+            <rect x="40" y="308" width="18" height="60" rx="9"/>
+            <rect x="57" y="312" width="18" height="58" rx="9"/>
+            <rect x="73" y="326" width="16" height="48" rx="8"/>
+            <ellipse cx="94" cy="378" rx="11" ry="20" transform="rotate(-35 94 378)"/>
+            <ellipse cx="56" cy="378" rx="34" ry="32"/>
+          </g>
+          <path d="M44 352 q4 4 0 8 M62 350 q4 4 0 8" fill="none" stroke="rgba(110,70,50,.35)" stroke-width="1.5"/>
+        </g>
+      </defs>
+
+      <!-- body (wide) -->
+      <path d="M-20 480 L-20 440 Q0 390 120 384 Q200 378 280 384 Q400 390 420 440 L420 480Z" fill="url(#suitG)"/>
+      <path d="M150 386 L200 480 L250 386Z" fill="#fff"/>
+      <path d="M150 386 L182 480 L112 480 Q108 430 150 386Z" fill="#26315e"/>
+      <path d="M250 386 L218 480 L288 480 Q292 430 250 386Z" fill="#26315e"/>
+      <circle cx="200" cy="452" r="4" fill="#cfd5e2"/>
+      <!-- neck -->
+      <rect x="150" y="296" width="100" height="100" fill="url(#skinG)"/>
+      <!-- collar + bow tie -->
+      <path d="M150 384 L200 400 L178 420Z M250 384 L200 400 L222 420Z" fill="#fff" stroke="#d5d9e4" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M200 406 L166 390 Q160 406 166 422Z M200 406 L234 390 Q240 406 234 422Z" fill="url(#bowG)" stroke="#3f1fa0" stroke-width="2" stroke-linejoin="round"/>
+      <ellipse cx="200" cy="406" rx="8" ry="9" fill="#6d3fe0" stroke="#3f1fa0" stroke-width="2"/>
+      <g fill="#fff" opacity=".85"><circle cx="178" cy="400" r="2.5"/><circle cx="176" cy="413" r="2.5"/><circle cx="222" cy="400" r="2.5"/><circle cx="224" cy="413" r="2.5"/></g>
+      <!-- double chin -->
+      <ellipse cx="200" cy="320" rx="72" ry="22" fill="url(#skinG)" stroke="rgba(110,70,50,.35)" stroke-width="1.5"/>
+      <!-- loose neck flaps -->
+      <g id="flapL">
+        <path d="M176 334 C156 352 150 384 158 406 C174 404 188 382 195 346 Z" fill="url(#skinG)" stroke="rgba(110,70,50,.55)" stroke-width="2"/>
+        <path d="M164 362 q8 4 16 0 M160 384 q8 4 14 0" fill="none" stroke="rgba(110,70,50,.35)" stroke-width="1.5"/>
+      </g>
+      <g id="flapR">
+        <path d="M224 334 C244 352 250 384 242 406 C226 404 212 382 205 346 Z" fill="url(#skinG)" stroke="rgba(110,70,50,.55)" stroke-width="2"/>
+        <path d="M236 362 q-8 4 -16 0 M240 384 q-8 4 -14 0" fill="none" stroke="rgba(110,70,50,.35)" stroke-width="1.5"/>
+      </g>
+      <g id="neckTuck" opacity="0">
+        <ellipse cx="187" cy="364" rx="14" ry="30" fill="url(#skinG)" stroke="rgba(110,70,50,.5)" stroke-width="2"/>
+        <ellipse cx="213" cy="364" rx="14" ry="30" fill="url(#skinG)" stroke="rgba(110,70,50,.5)" stroke-width="2"/>
+        <path d="M200 334 V394" stroke="rgba(90,55,40,.75)" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+      <rect id="tapeNeck" x="140" y="374" width="120" height="17" rx="2" fill="url(#tapeG)" stroke="#cdb983" stroke-width="1.5" stroke-dasharray="3 3" opacity="0"/>
+      <!-- ears -->
+      <g fill="url(#skinG)" stroke="rgba(110,70,50,.55)" stroke-width="2">
+        <ellipse cx="86" cy="215" rx="20" ry="32"/><ellipse cx="314" cy="215" rx="20" ry="32"/>
+      </g>
+      <path d="M82 202 q-8 13 2 26 M318 202 q8 13 -2 26" fill="none" stroke="rgba(110,70,50,.45)" stroke-width="3" stroke-linecap="round"/>
+      <path id="earHair" d="M78 210 l-10 -5 M78 218 l-12 0 M78 226 l-10 5 M322 210 l10 -5 M322 218 l12 0 M322 226 l10 5" stroke="#c4c4c4" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- head -->
+      <ellipse cx="200" cy="212" rx="114" ry="116" fill="url(#skinG)" stroke="rgba(110,70,50,.6)" stroke-width="2.5"/>
+      <!-- jowls -->
+      <ellipse id="jowlL" cx="126" cy="286" rx="46" ry="42" fill="url(#skinG)" stroke="rgba(110,70,50,.55)" stroke-width="2"/>
+      <ellipse id="jowlR" cx="274" cy="286" rx="46" ry="42" fill="url(#skinG)" stroke="rgba(110,70,50,.55)" stroke-width="2"/>
+      <!-- blush -->
+      <g id="blush" opacity="0"><ellipse cx="134" cy="252" rx="30" ry="17" fill="url(#blushG)"/><ellipse cx="266" cy="252" rx="30" ry="17" fill="url(#blushG)"/></g>
+      <!-- wrinkles -->
+      <g id="wrForehead" fill="none" stroke="rgba(110,70,50,.55)" stroke-width="2.4" stroke-linecap="round">
+        <path d="M150 124 q12.5 -6 25 0 t25 0 t25 0 t25 0"/>
+        <path d="M144 139 q14 -6 28 0 t28 0 t28 0 t28 0"/>
+        <path d="M150 154 q12.5 -5 25 0 t25 0 t25 0 t25 0"/>
+      </g>
+      <g id="wrL" fill="none" stroke="rgba(110,70,50,.5)" stroke-width="2.2" stroke-linecap="round">
+        <path d="M134 194 l-15 -6 M134 200 l-17 1 M134 206 l-15 7"/>
+        <path d="M178 258 Q158 282 168 306"/>
+        <path d="M168 318 Q164 330 170 342"/>
+      </g>
+      <g id="wrR" fill="none" stroke="rgba(110,70,50,.5)" stroke-width="2.2" stroke-linecap="round">
+        <path d="M266 194 l15 -6 M266 200 l17 1 M266 206 l15 7"/>
+        <path d="M222 258 Q242 282 232 306"/>
+        <path d="M232 318 Q236 330 230 342"/>
+      </g>
+      <!-- eye bags -->
+      <ellipse id="bagL" cx="160" cy="222" rx="24" ry="10" fill="url(#bagG)"/>
+      <ellipse id="bagR" cx="240" cy="222" rx="24" ry="10" fill="url(#bagG)"/>
+      <!-- eyes -->
+      <ellipse cx="160" cy="200" rx="21" ry="13" fill="url(#eyeG)" stroke="#5a3d34" stroke-width="1.8"/>
+      <ellipse cx="240" cy="200" rx="21" ry="13" fill="url(#eyeG)" stroke="#5a3d34" stroke-width="1.8"/>
+      <g id="irises">
+        <circle cx="162" cy="205" r="9" fill="url(#irisG)"/><circle cx="162" cy="205" r="4.2" fill="#111"/><circle cx="165" cy="201.5" r="2.4" fill="#fff"/>
+        <circle cx="242" cy="205" r="9" fill="url(#irisG)"/><circle cx="242" cy="205" r="4.2" fill="#111"/><circle cx="245" cy="201.5" r="2.4" fill="#fff"/>
+      </g>
+      <g id="lids" fill="url(#skinG)" stroke="rgba(110,70,50,.6)" stroke-width="1.8">
+        <ellipse cx="160" cy="192" rx="24" ry="13"/><ellipse cx="240" cy="192" rx="24" ry="13"/>
+      </g>
+      <g id="winkL" opacity="0">
+        <ellipse cx="160" cy="200" rx="24" ry="15" fill="url(#skinG)"/>
+        <path d="M139 202 Q160 214 181 202" fill="none" stroke="#3a2620" stroke-width="3" stroke-linecap="round"/>
+        <path d="M145 207 l-4 5 M153 210 l-2 6 M162 211 l0 6" stroke="#3a2620" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <!-- brows -->
+      <g fill="none" stroke-linecap="round">
+        <path d="M132 178 Q160 160 188 172" stroke="#b9b9b9" stroke-width="10"/>
+        <path d="M268 178 Q240 160 212 172" stroke="#b9b9b9" stroke-width="10"/>
+        <path id="browFluff" d="M136 176 l-6 -8 M146 170 l-3 -10 M158 167 l1 -11 M170 167 l4 -10 M182 170 l7 -7 M264 176 l6 -8 M254 170 l3 -10 M242 167 l-1 -11 M230 167 l-4 -10 M218 170 l-7 -7" stroke="#d8d8d8" stroke-width="3"/>
+        <path d="M140 176 Q160 166 184 172 M260 176 Q240 166 216 172" stroke="#8f8f8f" stroke-width="2" opacity=".6"/>
+      </g>
+      <g id="strays" fill="none" stroke="#9a9a9a" stroke-width="2.6" stroke-linecap="round">
+        <path id="st0" d="M146 168 q-6 -12 2 -20 q6 -6 -2 -14"/>
+        <path id="st1" d="M170 164 q2 -14 10 -18 q6 -4 4 -14"/>
+        <path id="st2" d="M192 174 q4 -8 8 -6 q6 2 8 -6"/>
+        <path id="st3" d="M200 180 q-6 -8 0 -16 q6 -8 0 -14"/>
+        <path id="st4" d="M230 164 q-2 -14 -10 -18 q-6 -4 -4 -14"/>
+        <path id="st5" d="M254 168 q6 -12 -2 -20 q-6 -6 2 -14"/>
+        <path id="st6" d="M134 178 q-10 -2 -16 -10 q-4 -6 -12 -6"/>
+        <path id="st7" d="M266 178 q10 -2 16 -10 q4 -6 12 -6"/>
+      </g>
+      <!-- nose -->
+      <path d="M191 200 Q186 232 182 248 M209 200 Q214 232 218 248" fill="none" stroke="rgba(110,70,50,.4)" stroke-width="2.2" stroke-linecap="round"/>
+      <ellipse cx="200" cy="254" rx="27" ry="21" fill="url(#skinG)" stroke="rgba(110,70,50,.55)" stroke-width="2"/>
+      <ellipse cx="187" cy="265" rx="6" ry="3.5" fill="rgba(80,45,35,.6)"/><ellipse cx="213" cy="265" rx="6" ry="3.5" fill="rgba(80,45,35,.6)"/>
+      <ellipse cx="193" cy="246" rx="8" ry="4.5" fill="#fff" opacity=".45"/>
+      <!-- lips -->
+      <g id="lips" transform="translate(200 302) scale(.85 .45) translate(-200 -302)">
+        <path d="M166 302 Q183 289 200 296 Q217 289 234 302 Q200 309 166 302Z" fill="url(#lipG)" stroke="rgba(110,50,50,.5)" stroke-width="1.5"/>
+        <path d="M166 302 Q200 309 234 302 Q218 322 200 322 Q182 322 166 302Z" fill="url(#lipG)" stroke="rgba(110,50,50,.5)" stroke-width="1.5"/>
+        <path d="M166 302 Q200 309 234 302" fill="none" stroke="#7a3a3a" stroke-width="2"/>
+        <ellipse cx="200" cy="313" rx="11" ry="3" fill="#fff" opacity=".45"/>
+      </g>
+      <!-- age spots -->
+      <g id="spots">
+        <circle id="sp1" cx="176" cy="114" r="9" fill="url(#spotG)"/>
+        <circle id="sp2" cx="242" cy="146" r="7" fill="url(#spotG)"/>
+        <circle id="sp3" cx="118" cy="250" r="10" fill="url(#spotG)"/>
+        <circle id="sp4" cx="284" cy="262" r="8" fill="url(#spotG)"/>
+      </g>
+      <!-- face tapes -->
+      <rect id="tapeTop" x="166" y="100" width="68" height="17" rx="2" fill="url(#tapeG)" stroke="#cdb983" stroke-width="1.5" stroke-dasharray="3 3" opacity="0"/>
+      <rect id="tapeL" x="80" y="160" width="62" height="16" rx="2" fill="url(#tapeG)" stroke="#cdb983" stroke-width="1.5" stroke-dasharray="3 3" transform="rotate(-28 111 168)" opacity="0"/>
+      <rect id="tapeR" x="258" y="160" width="62" height="16" rx="2" fill="url(#tapeG)" stroke="#cdb983" stroke-width="1.5" stroke-dasharray="3 3" transform="rotate(28 289 168)" opacity="0"/>
+      <!-- sad wisps -->
+      <g id="wisps" fill="none" stroke="#cfcfcf" stroke-width="2.5" stroke-linecap="round">
+        <path d="M190 98 q-8 -22 6 -36"/><path d="M204 97 q6 -18 -2 -30 q-6 -8 4 -14"/><path d="M216 100 q10 -12 4 -24"/>
+      </g>
+      <!-- The Greatest Hair Piece -->
+      <g id="hairDrop" style="display:none">
+        <path d="M88 218 C76 140 128 92 200 90 C272 92 324 140 312 218 C302 188 286 166 262 156 C234 146 166 146 138 156 C114 166 98 188 88 218Z" fill="url(#hairG)" stroke="#b08f08" stroke-width="2"/>
+        <g id="swoop">
+          <path d="M116 138 C100 88 128 30 200 22 C272 30 300 88 284 138 C252 116 148 116 116 138Z" fill="url(#hairG)" stroke="#b08f08" stroke-width="2"/>
+          <g fill="none" stroke-linecap="round">
+            <path d="M138 128 C126 90 148 50 196 34" stroke="#fffbc4" stroke-width="4" opacity=".8"/>
+            <path d="M166 122 C160 88 178 56 214 42" stroke="#fffbc4" stroke-width="3" opacity=".55"/>
+            <path d="M232 122 C242 92 236 62 214 44" stroke="#b8950a" stroke-width="2.5" opacity=".5"/>
+            <path d="M262 128 C272 96 260 60 228 38" stroke="#b8950a" stroke-width="2.5" opacity=".45"/>
+            <path d="M200 120 C196 90 204 62 224 46" stroke="#fffbc4" stroke-width="2.5" opacity=".5"/>
+          </g>
+        </g>
+        <path d="M108 190 C112 168 126 156 146 150 M292 190 C288 168 274 156 254 150" fill="none" stroke="#fffbc4" stroke-width="3" opacity=".6" stroke-linecap="round"/>
+      </g>
+      <!-- stink lines -->
+      <g id="stink" class="stink" fill="none" stroke="#8cc63f" stroke-width="4" stroke-linecap="round">
+        <path d="M118 478 q-9 -12 0 -24 t0 -24 t0 -24" style="animation-delay:0s"/>
+        <path d="M142 470 q-9 -12 0 -24 t0 -24" style="animation-delay:.6s"/>
+        <path d="M258 470 q9 -12 0 -24 t0 -24" style="animation-delay:.3s"/>
+        <path d="M282 478 q9 -12 0 -24 t0 -24 t0 -24" style="animation-delay:.9s"/>
+        <path d="M200 478 q-8 -10 0 -20 t0 -20" style="animation-delay:1.2s"/>
+      </g>
+      <!-- hands -->
+      <use href="#hand" xlink:href="#hand"/>
+      <use href="#hand" xlink:href="#hand" transform="translate(400 0) scale(-1 1)"/>
+      <circle id="sp5" cx="56" cy="384" r="10" fill="url(#spotG)"/>
+      <circle id="sp6" cx="344" cy="378" r="9" fill="url(#spotG)"/>
+      <circle id="sp7" cx="66" cy="342" r="6" fill="url(#spotG)"/>
+      <g id="speech" style="display:none">
+        <g id="speechInner">
+          <rect x="316" y="276" width="56" height="70" rx="3" fill="#fffdf4" stroke="#b9ad8e" stroke-width="2" transform="rotate(10 344 311)"/>
+          <g transform="rotate(10 344 311)" stroke="#9aa3b5" stroke-width="2">
+            <text x="344" y="294" font-family="Georgia, serif" font-size="9" font-weight="bold" text-anchor="middle" fill="#3a2340" stroke="none">SPEECH</text>
+            <path d="M324 302 H364 M324 310 H364 M324 318 H358 M324 326 H364 M324 334 H350"/>
+          </g>
+        </g>
+      </g>
+      <g id="hints"></g>
+    </svg>
+
+    <div class="podium">★</div>
+    <div class="bubble" id="bubble"></div>
+    <div class="toolcursor" id="tool"><div class="in" id="toolIn"></div></div>
+    <div class="curtain" id="curtain">
+      <div class="rod"></div>
+      <div class="drape l"></div><div class="drape r"></div>
+      <div class="cnote" id="cnote"></div>
+    </div>
+    <div class="flash" id="flash"></div>
+  </div>
+
+  <div class="panel">
+    <div class="tray" id="tray"></div>
+    <div id="stepUI">
+      <div class="stepno" id="stepno"></div>
+      <h2 id="stepname"></h2>
+      <div class="instr" id="instr"></div>
+      <div class="toolbtn"><span class="em" id="toolEm"></span><span id="toolName"></span></div>
+      <div class="bar"><i id="bar"></i></div>
+      <button class="btn" id="next" disabled>Next step ➜</button>
+    </div>
+    <div class="results" id="results">
+      <div class="stepno">Live on air!</div>
+      <h2>A Total Transformation</h2>
+      <div class="ba"><div>BEFORE<img id="beforeImg" alt="Senator before makeover"></div><div>AFTER<img id="afterImg" alt="Senator after makeover"></div></div>
+      <ul class="stats">
+        <li>Visible wrinkles: 0 (tape used: a lot)</li>
+        <li>Lip volume: 300%, fully filibuster-ready</li>
+        <li>Rogue brow hairs: 8 evicted</li>
+        <li>Hair height: needs its own security clearance</li>
+        <li>Tan shade: "Traffic Cone Orange"</li>
+        <li>Speech: discarded</li>
+        <li>Stink level: 0, classified</li>
+      </ul>
+      <button class="btn" id="again">💄 Play again</button>
+    </div>
+    <div class="small"><span>🎧 ASMR sounds</span><button id="snd">Sound: ON</button></div>
+  </div>
+</div>
+<footer>A parody game. Senator Thaddeus Q. Crumbleton is a fictional politician; any resemblance to a real member of Congress is purely coincidental.</footer>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const svg = $('face'), stage = $('stage'), toolEl = $('tool');
+
+/* ---------- tool art (viewBox 0 0 100 100) ---------- */
+const HAIRPATHS = `<path d="M88 218 C76 140 128 92 200 90 C272 92 324 140 312 218 C302 188 286 166 262 156 C234 146 166 146 138 156 C114 166 98 188 88 218Z" fill="url(#t-hair)" stroke="#b08f08" stroke-width="3"/><path d="M116 138 C100 88 128 30 200 22 C272 30 300 88 284 138 C252 116 148 116 116 138Z" fill="url(#t-hair)" stroke="#b08f08" stroke-width="3"/><path d="M138 128 C126 90 148 50 196 34" stroke="#fffbc4" stroke-width="7" fill="none" opacity=".8" stroke-linecap="round"/>`;
+const ART = {
+ tape:{hot:[48,48],svg:`<svg viewBox="0 0 100 100"><defs><radialGradient id="t-tape" cx=".4" cy=".35"><stop offset="0" stop-color="#fff8e1"/><stop offset=".7" stop-color="#ead9a8"/><stop offset="1" stop-color="#c2a96e"/></radialGradient></defs><path d="M76 60 L96 92 L80 98 L64 66Z" fill="#f3e6c0" stroke="#c2a96e" stroke-width="2"/><circle cx="48" cy="48" r="38" fill="url(#t-tape)" stroke="#a88f52" stroke-width="2"/><circle cx="48" cy="48" r="28" fill="none" stroke="#d8c690" stroke-width="1.5"/><circle cx="48" cy="48" r="17" fill="#fff" stroke="#c2a96e" stroke-width="3"/><path d="M28 30 Q38 20 52 18" stroke="#fff" stroke-width="4" fill="none" opacity=".7" stroke-linecap="round"/></svg>`},
+ laser:{hot:[16,16],svg:`<svg viewBox="0 0 100 100"><defs><linearGradient id="t-metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6f8fc"/><stop offset=".5" stop-color="#9aa3b5"/><stop offset="1" stop-color="#e9edf5"/></linearGradient><radialGradient id="t-glow"><stop offset="0" stop-color="#fff"/><stop offset=".4" stop-color="#7ef7ff"/><stop offset="1" stop-color="#7ef7ff" stop-opacity="0"/></radialGradient></defs><g transform="rotate(45 50 50)"><rect x="20" y="41" width="70" height="18" rx="9" fill="url(#t-metal)" stroke="#6b7385" stroke-width="1.5"/><rect x="58" y="41" width="7" height="18" fill="#7b4dff"/><circle cx="78" cy="50" r="3" fill="#ff5fae"/><polygon points="21,43 6,50 21,57" fill="#4a5060"/><circle cx="2" cy="50" r="10" fill="url(#t-glow)"/></g></svg>`},
+ syringe:{hot:[8,8],svg:`<svg viewBox="0 0 100 100"><g transform="rotate(45 50 50)"><line x1="-10" y1="50" x2="20" y2="50" stroke="#9aa4b2" stroke-width="2.5"/><rect x="17" y="45" width="7" height="10" rx="1" fill="#cfd6e0"/><rect x="24" y="39" width="46" height="22" rx="4" fill="rgba(235,245,255,.9)" stroke="#8fa0b5" stroke-width="2"/><rect x="26" y="41" width="28" height="18" rx="2" fill="#ff7aa8"/><path d="M34 39 v6 M42 39 v6 M50 39 v6 M58 39 v6" stroke="#8fa0b5" stroke-width="1.5"/><rect x="68" y="33" width="5" height="34" rx="2" fill="#b6c2d2"/><rect x="54" y="46" width="34" height="8" fill="#dfe5ee" stroke="#8fa0b5" stroke-width="1.5"/><rect x="87" y="37" width="7" height="26" rx="2" fill="#b6c2d2" stroke="#8fa0b5" stroke-width="1.5"/><rect x="28" y="43" width="20" height="4" rx="2" fill="#fff" opacity=".6"/></g></svg>`},
+ tweezers:{hot:[19,19],svg:`<svg viewBox="0 0 100 100"><defs><linearGradient id="t-tw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f6fb"/><stop offset=".5" stop-color="#8f99ab"/><stop offset="1" stop-color="#e3e8f0"/></linearGradient></defs><g transform="rotate(45 50 50)"><path d="M94 46 Q50 34 6 49" fill="none" stroke="url(#t-tw)" stroke-width="7" stroke-linecap="round"/><path d="M94 54 Q50 66 6 51" fill="none" stroke="url(#t-tw)" stroke-width="7" stroke-linecap="round"/><path d="M94 46 Q50 34 6 49 M94 54 Q50 66 6 51" fill="none" stroke="#5f6878" stroke-width="1" opacity=".6"/><rect x="48" y="35" width="22" height="7" rx="3.5" fill="#ff8cc6" transform="rotate(-8 59 38)"/><rect x="48" y="58" width="22" height="7" rx="3.5" fill="#ff8cc6" transform="rotate(8 59 62)"/><circle cx="94" cy="50" r="5" fill="#8f99ab"/></g></svg>`},
+ sponge:{hot:[50,14],svg:`<svg viewBox="0 0 100 100"><defs><radialGradient id="t-sponge" cx=".4" cy=".55"><stop offset="0" stop-color="#ffe2cf"/><stop offset=".7" stop-color="#f6b894"/><stop offset="1" stop-color="#d98d68"/></radialGradient></defs><path d="M50 8 C72 30 86 56 81 76 C76 94 24 94 19 76 C14 56 28 30 50 8Z" fill="url(#t-sponge)" stroke="#c07a55" stroke-width="2"/><path d="M50 8 C58 16 62 22 64 28 Q50 34 37 28 C40 22 44 16 50 8Z" fill="#f1c9a5"/><ellipse cx="38" cy="58" rx="7" ry="12" fill="#fff" opacity=".35"/></svg>`},
+ spray:{hot:[6,24],svg:`<svg viewBox="0 0 100 100"><defs><linearGradient id="t-btl" x1="0" x2="1"><stop offset="0" stop-color="#e9862f"/><stop offset=".3" stop-color="#ffd3a1"/><stop offset=".55" stop-color="#f39236"/><stop offset="1" stop-color="#b9581a"/></linearGradient><linearGradient id="t-head" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#5a606e"/><stop offset="1" stop-color="#1f2229"/></linearGradient></defs><rect x="45" y="32" width="22" height="16" fill="#2f333d"/><path d="M42 50 Q42 44 48 44 L64 44 Q70 44 70 50 L76 60 Q80 66 80 72 L80 90 Q80 98 72 98 L38 98 Q30 98 30 90 L30 72 Q30 66 34 60Z" fill="url(#t-btl)" stroke="#9c4b16" stroke-width="1.5"/><rect x="35" y="66" width="40" height="22" rx="4" fill="#fff" opacity=".92"/><text x="55" y="81" font-size="11" font-family="Arial, sans-serif" font-weight="bold" text-anchor="middle" fill="#e0662a">GLOW</text><rect x="72" y="62" width="3" height="30" rx="1.5" fill="#fff" opacity=".45"/><path d="M12 20 L28 17 L40 12 L72 12 Q80 12 80 20 L80 34 L44 34 L30 30 L12 28Z" fill="url(#t-head)"/><rect x="4" y="19" width="10" height="10" rx="2" fill="#7a7f8a"/><circle cx="6" cy="24" r="1.8" fill="#222"/><path d="M30 30 Q22 44 28 58 L35 56 Q30 44 38 32Z" fill="#3a3e48"/><path d="M44 16 L74 16" stroke="#fff" stroke-width="2" opacity=".25"/></svg>`},
+ wig:{hot:[50,50],svg:`<svg viewBox="0 0 100 100"><defs><linearGradient id="t-hair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf27a"/><stop offset=".5" stop-color="#ecd52c"/><stop offset="1" stop-color="#c7a40b"/></linearGradient></defs><ellipse cx="50" cy="92" rx="30" ry="5" fill="#000" opacity=".15"/><g transform="translate(-35 0) scale(.425)">${HAIRPATHS}</g></svg>`},
+ dryer:{hot:[5,37],svg:`<svg viewBox="0 0 100 100"><defs><linearGradient id="t-dry" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ffb3d6"/><stop offset=".5" stop-color="#ff5fae"/><stop offset="1" stop-color="#b52a70"/></linearGradient></defs><path d="M58 52 L70 52 L80 92 Q81 98 75 98 L68 98 Q64 98 63 92Z" fill="url(#t-dry)" stroke="#8c1f57" stroke-width="1.5"/><rect x="66" y="66" width="8" height="8" rx="2" fill="#fff" opacity=".8"/><rect x="12" y="24" width="58" height="26" rx="8" fill="url(#t-dry)" stroke="#8c1f57" stroke-width="1.5"/><circle cx="70" cy="37" r="22" fill="url(#t-dry)" stroke="#8c1f57" stroke-width="1.5"/><circle cx="72" cy="37" r="12" fill="#6e1543" opacity=".35"/><path d="M68 28 v18 M74 28 v18 M80 30 v14" stroke="#fff" opacity=".35" stroke-width="2"/><rect x="2" y="26" width="12" height="22" rx="3" fill="#3a3e48"/><path d="M20 29 H60" stroke="#fff" stroke-width="3" opacity=".45" stroke-linecap="round"/></svg>`},
+ diaper:{hot:[50,50],svg:`<svg viewBox="0 0 100 100"><path d="M10 26 Q50 18 90 26 L84 48 Q66 56 62 86 Q50 92 38 86 Q34 56 16 48Z" fill="#fff" stroke="#9fb3c8" stroke-width="2.5"/><rect x="6" y="24" width="16" height="11" rx="3" fill="#7fd3ff"/><rect x="78" y="24" width="16" height="11" rx="3" fill="#7fd3ff"/><g fill="#ffd84d" stroke="#d9a400" stroke-width="1"><circle cx="38" cy="42" r="5"/><circle cx="62" cy="42" r="5"/><circle cx="50" cy="62" r="5"/></g><path d="M30 34 Q50 30 70 34" stroke="#cfe0ef" stroke-width="2" fill="none"/></svg>`},
+ speech:{hot:[50,50],svg:`<svg viewBox="0 0 100 100"><rect x="22" y="8" width="56" height="78" rx="4" fill="#fffdf4" stroke="#b9ad8e" stroke-width="2.5" transform="rotate(6 50 47)"/><g transform="rotate(6 50 47)"><text x="50" y="28" font-family="Georgia, serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#3a2340">SPEECH</text><path d="M30 38 H70 M30 47 H70 M30 56 H64 M30 65 H70 M30 74 H56" stroke="#9aa3b5" stroke-width="2.5"/></g></svg>`},
+ mic:{hot:[50,50],svg:`<svg viewBox="0 0 100 100"><defs><radialGradient id="t-mic" cx=".35" cy=".3"><stop offset="0" stop-color="#d5d9e2"/><stop offset="1" stop-color="#3b3f48"/></radialGradient></defs><rect x="44" y="52" width="12" height="42" rx="5" fill="#2a2d33"/><rect x="40" y="56" width="20" height="6" fill="#7b4dff"/><rect x="32" y="6" width="36" height="52" rx="18" fill="url(#t-mic)" stroke="#222" stroke-width="2"/><path d="M36 22 H64 M34 32 H66 M36 42 H64" stroke="#222" opacity=".35" stroke-width="2"/></svg>`}
+};
+
+/* ---------- colors ---------- */
+const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+const rgb=c=>`rgb(${c})`;
+const SKIN_OLD=[217,211,195], SKIN_NEW=[232,156,92], WHITE=[255,255,255], BROWN=[105,62,40];
+function setSkin(t){
+  const base=mix(SKIN_OLD,SKIN_NEW,t);
+  $('sk0').setAttribute('stop-color',rgb(mix(base,WHITE,.38)));
+  $('sk1').setAttribute('stop-color',rgb(base));
+  $('sk2').setAttribute('stop-color',rgb(mix(base,BROWN,.3)));
+  $('blush').setAttribute('opacity',(t*.7).toFixed(2));
+}
+const LIP_OLD=[202,160,150], LIP_NEW=[255,86,138];
+function setLips(s){
+  const c=mix(LIP_OLD,LIP_NEW,s);
+  $('lp0').setAttribute('stop-color',rgb(mix(c,WHITE,.3)));
+  $('lp1').setAttribute('stop-color',rgb(mix(c,BROWN,.15)));
+  const sx=.85+.6*s, sy=.45+1.35*s;
+  $('lips').setAttribute('transform',`translate(200 302) scale(${sx} ${sy}) translate(-200 -302)`);
+}
+
+/* ---------- sound ---------- */
+let AC=null, noiseBuf=null, soundOn=true, loop=null;
+function ac(){
+  if(!AC){
+    AC=new (window.AudioContext||window.webkitAudioContext)();
+    const len=AC.sampleRate*2; noiseBuf=AC.createBuffer(1,len,AC.sampleRate);
+    const d=noiseBuf.getChannelData(0); for(let i=0;i<len;i++) d[i]=Math.random()*2-1;
+  }
+  if(AC.state==='suspended') AC.resume();
+  return AC;
+}
+function noise(dur,freq,q,vol,to){
+  if(!soundOn) return; const a=ac(), t=a.currentTime;
+  const s=a.createBufferSource(); s.buffer=noiseBuf;
+  const f=a.createBiquadFilter(); f.type='bandpass'; f.Q.value=q; f.frequency.setValueAtTime(freq,t);
+  if(to) f.frequency.exponentialRampToValueAtTime(to,t+dur);
+  const g=a.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  s.connect(f).connect(g).connect(a.destination); s.start(t,Math.random()); s.stop(t+dur);
+}
+function tone(freq,dur,type='sine',vol=.12,to){
+  if(!soundOn) return; const a=ac(), t=a.currentTime;
+  const o=a.createOscillator(); o.type=type; o.frequency.setValueAtTime(freq,t);
+  if(to) o.frequency.exponentialRampToValueAtTime(to,t+dur);
+  const g=a.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  o.connect(g).connect(a.destination); o.start(t); o.stop(t+dur);
+}
+const sfx={
+  tape(){ noise(.38,3200,1.1,.4,500); },
+  pop(){ tone(420,.12,'sine',.18,900); },
+  done(){ [660,830,990,1320].forEach((f,i)=>setTimeout(()=>tone(f,.25,'triangle',.1),i*90)); },
+  inject(){ noise(.08,4000,2,.2); setTimeout(()=>tone(300,.35,'sine',.2,620),60); },
+  rustle(){ noise(.25,2600,.8,.25); setTimeout(()=>noise(.22,1800,.8,.18),170); },
+  shutter(){ noise(.07,5000,.6,.35); setTimeout(()=>noise(.05,3000,.6,.25),60); },
+  plop(){ tone(180,.25,'sine',.25,70); noise(.15,800,1,.2); },
+  pluck(){ tone(1800,.05,'square',.08,900); noise(.05,6000,2,.2); },
+  whoosh(){ noise(.45,600,.8,.3,3000); },
+  kiss(){ tone(1200,.08,'sine',.2,2400); noise(.06,3000,3,.2); }
+};
+function loopSound(kind){
+  if(!soundOn) return; const a=ac();
+  if(!loop){
+    const s=a.createBufferSource(); s.buffer=noiseBuf; s.loop=true;
+    const f=a.createBiquadFilter(), g=a.createGain(); g.gain.value=0;
+    s.connect(f).connect(g).connect(a.destination); s.start(); loop={s,f,g,to:0};
+  }
+  const t=a.currentTime;
+  if(kind==='spray'){ loop.f.type='highpass'; loop.f.frequency.value=2800; }
+  else if(kind==='dryer'){ loop.f.type='lowpass'; loop.f.frequency.value=900; }
+  else { loop.f.type='bandpass'; loop.f.frequency.value=kind==='laser'?4200:1300; loop.f.Q.value=kind==='laser'?6:1.2; }
+  const vol=kind==='dryer'?.35:kind==='spray'?.18:.14;
+  loop.g.gain.cancelScheduledValues(t); loop.g.gain.setTargetAtTime(vol,t,.03);
+  clearTimeout(loop.to);
+  loop.to=setTimeout(()=>{ if(loop) loop.g.gain.setTargetAtTime(0,ac().currentTime,.05); },130);
+}
+
+/* ---------- helpers ---------- */
+function animate(dur,fn,done){
+  const t0=performance.now();
+  (function f(now){ const t=Math.min(1,(now-t0)/dur); fn(t); if(t<1) requestAnimationFrame(f); else if(done) done(); })(t0);
+}
+const ease=t=>1-Math.pow(1-t,3);
+const bounce=t=>{const n=7.5625,d=2.75; if(t<1/d) return n*t*t; if(t<2/d) return n*(t-=1.5/d)*t+.75; if(t<2.5/d) return n*(t-=2.25/d)*t+.9375; return n*(t-=2.625/d)*t+.984375;};
+function scaleAbout(el,cx,cy,sx,sy,ty=0){ el.setAttribute('transform',`translate(0 ${ty}) translate(${cx} ${cy}) scale(${sx} ${sy}) translate(${-cx} ${-cy})`); }
+function fx(cls,x,y,txt){
+  const d=document.createElement('div'); d.className='fx '+cls;
+  d.style.left=((x-VB.x)/VB.w*100)+'%'; d.style.top=((y-VB.y)/VB.h*100)+'%';
+  if(txt) d.textContent=txt;
+  stage.appendChild(d); setTimeout(()=>d.remove(),2300); return d;
+}
+function sparkles(x,y,n=3,ch='✨'){ for(let i=0;i<n;i++) setTimeout(()=>fx('sparkle',x+(Math.random()-.5)*50,y+(Math.random()-.5)*40,ch),i*90); }
+function say(text){ const b=$('bubble'); b.classList.add('hide'); setTimeout(()=>{ b.textContent=text; b.classList.remove('hide'); },180); }
+function svgPt(e){ const p=svg.createSVGPoint(); p.x=e.clientX; p.y=e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); }
+let VB={x:0,y:0,w:400,h:480};
+function setVB(v){ VB=v; const str=`${v.x} ${v.y} ${v.w} ${v.h}`; svg.setAttribute('viewBox',str); $('bg').setAttribute('viewBox',str); }
+function zoomTo(t,dur=700){ const a={...VB}; animate(dur,k=>{ const e=ease(k); setVB({x:a.x+(t.x-a.x)*e,y:a.y+(t.y-a.y)*e,w:a.w+(t.w-a.w)*e,h:a.h+(t.h-a.h)*e}); }); }
+const ZOOM_BROWS={x:100,y:90,w:200,h:240}, ZOOM_OUT={x:0,y:0,w:400,h:480};
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const op=(id,v)=>$(id).setAttribute('opacity',v);
+function snapshot(){
+  const c=svg.cloneNode(true); const h=c.querySelector('#hints'); if(h) h.innerHTML='';
+  c.setAttribute('width','400'); c.setAttribute('height','480'); c.setAttribute('viewBox','0 0 400 480');
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(c));
+}
+
+/* vanity bulbs */
+(function(){ const g=$('bulbs'); let h='';
+  for(let i=0;i<22;i++){ const a=i/22*Math.PI*2; const x=200+171*Math.cos(a), y=215+198*Math.sin(a);
+    h+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="14" fill="url(#glowG)"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6.5" fill="url(#bulbG)" stroke="#e2b24c" stroke-width="1.5"/>`; }
+  g.innerHTML=h; })();
+
+/* ---------- hair state ---------- */
+let hairY=0, swoopS=.25;
+function updateHair(){
+  $('hairDrop').setAttribute('transform',`translate(0 ${hairY})`);
+  $('swoop').setAttribute('transform',`translate(200 140) scale(${.82+.18*swoopS} ${swoopS}) translate(-200 -140)`);
+}
+
+/* ---------- steps ---------- */
+let lipLevel=0;
+function growLips(){
+  const from=lipLevel/3, to=++lipLevel/3;
+  animate(450,t=>setLips(from+(to-from)*bounce(t)));
+}
+function flaps(t){
+  $('flapL').setAttribute('transform',`translate(${12*t} 0) rotate(${20-20*t} 184 336) translate(184 336) scale(${1-.3*t} ${1-.25*t}) translate(-184 -336)`);
+  $('flapR').setAttribute('transform',`translate(${-12*t} 0) rotate(${-20+20*t} 216 336) translate(216 336) scale(${1-.3*t} ${1-.25*t}) translate(-216 -336)`);
+  $('flapL').setAttribute('opacity',1-t); $('flapR').setAttribute('opacity',1-t); $('neckTuck').setAttribute('opacity',t);
+}
+const spotZone=(id,x,y,r)=>({x,y,r:r+16,need:120,upd:p=>op(id,1-p)});
+const steps=[
+ { name:'Tape Facelift', tool:'tape', label:'Industrial-Strength Beauty Tape', mode:'tap', sound:'tape',
+   instr:'Tap each saggy area to tape it back: the forehead, both cheeks, and low on the neck to push those loose flaps together.',
+   say:"Please tape back my loose skin; I need to be wrinkle-free.",
+   zones:[
+     {x:200,y:140,r:42,act(){ animate(300,t=>op('wrForehead',1-t)); animate(250,t=>op('tapeTop',t)); }},
+     {x:140,y:215,r:40,act(){ animate(300,t=>op('wrL',1-t)); animate(250,t=>op('tapeL',t)); }},
+     {x:260,y:215,r:40,act(){ animate(300,t=>op('wrR',1-t)); animate(250,t=>op('tapeR',t)); }},
+     {x:200,y:378,r:40,act(){ animate(550,t=>flaps(ease(t))); animate(250,t=>op('tapeNeck',t)); }}
+   ]},
+ { name:'Laser Lift', tool:'laser', label:"Dr. Smoothington's Wrinkle Laser", mode:'rub', loop:'laser', fxCls:'laser',
+   instr:'Plastic surgery time! Rub the laser over the eye bags and the droopy jowls until they lift.',
+   say:"Zap away my eye bags so I can fully admire my reflection.",
+   zones:[
+     {x:160,y:222,r:28,need:160,upd:p=>op('bagL',1-p)},
+     {x:240,y:222,r:28,need:160,upd:p=>op('bagR',1-p)},
+     {x:126,y:290,r:40,need:220,upd:p=>scaleAbout($('jowlL'),126,286,1-.15*p,1-.2*p,-16*p)},
+     {x:274,y:290,r:40,need:220,upd:p=>scaleAbout($('jowlR'),274,286,1-.15*p,1-.2*p,-16*p)}
+   ],
+   finish(){ animate(600,t=>{ const e=ease(t); $('lids').setAttribute('transform',`translate(0 ${-12*e})`); $('irises').setAttribute('transform',`translate(0 ${-3*e})`); }); op('earHair',0); say("Whoa. I can SEE. And what I see is GORGEOUS."); } },
+ { name:'Botox Lips', tool:'syringe', label:'Pout-o-Matic Lip Filler', mode:'tap', sound:'inject',
+   instr:"It's the hottest trend on Capitol Hill. Tap each glowing spot on his lips to inject filler. Go BIG.",
+   say:"Give me the Senate Pout special. Plump it to the rafters!",
+   zones:[
+     {x:184,y:296,r:22,act(){ growLips(); for(let i=0;i<5;i++) fx('drop',184+(Math.random()-.5)*20,296+(Math.random()-.5)*14); }},
+     {x:216,y:296,r:22,act(){ growLips(); for(let i=0;i<5;i++) fx('drop',216+(Math.random()-.5)*20,296+(Math.random()-.5)*14); }},
+     {x:200,y:318,r:22,act(){ growLips(); for(let i=0;i<5;i++) fx('drop',200+(Math.random()-.5)*20,318+(Math.random()-.5)*14); }}
+   ],
+   finish(){ say("Mmmph! I feel like a brand-new… mmph… legislator."); sfx.kiss(); } },
+ { name:'Brow Pluck', tool:'tweezers', label:'Precision Brow Tweezers', mode:'tap', sound:'pluck',
+   instr:'Zoom in! Tap every wild, wiry stray hair sticking out of his eyebrows to pluck it out.',
+   say:"Evict every rogue brow hair. They've been filibustering my forehead since 1983!",
+   zones:[0,1,2,3,4,5,6,7].map(i=>{ const tips=[[148,134],[184,132],[208,162],[200,150],[216,132],[252,134],[106,162],[294,162]];
+     return {x:tips[i][0],y:tips[i][1]+8,r:16,act(){ pluck(i,tips[i]); }}; }),
+   enter(){ zoomTo(ZOOM_BROWS); },
+   finish(){ animate(400,t=>op('browFluff',1-t)); setTimeout(()=>zoomTo(ZOOM_OUT),500); say("Ow. OW. Worth it. Look at these executive-branch brows!"); } },
+ { name:'Concealer', tool:'sponge', label:'Full-Coverage Concealer Sponge', mode:'rub', loop:'rub', fxCls:'cream',
+   instr:'Dab and rub concealer over every age spot on his face and hands until they disappear.',
+   say:"I am NOT old! These are freckles of wisdom. Very distinguished, trust me!",
+   zones:[ spotZone('sp1',176,114,9), spotZone('sp2',242,146,7), spotZone('sp3',118,250,10), spotZone('sp4',284,262,8),
+           spotZone('sp5',56,384,10), spotZone('sp6',344,378,9), spotZone('sp7',66,342,6) ] },
+ { name:'Spray Tan', tool:'spray', label:'Glow Mist Self-Tanning Spray', mode:'cover', loop:'spray',
+   instr:'Hold and sweep the spray bottle over his whole face, neck, and hands until he hits a perfect "Traffic Cone Orange."',
+   say:"My favorite shade! Traffic Cone Orange!" },
+ { name:'Hair Piece', tool:'wig', label:'The Greatest Hair Piece', mode:'tap', sound:'plop',
+   instr:'Tap the top of his head to install The Greatest Hair Piece. Say goodbye to those three sad wisps.',
+   say:"My tried-and-true toupee!",
+   zones:[ {x:200,y:120,r:85,act(){ placeHair(); }} ] },
+ { name:'Blow-Dry', tool:'dryer', label:'TurboVolume Blow-Dryer', mode:'rub', loop:'dryer', fxCls:'air',
+   instr:'The hair piece is flat from the box. Blow-dry it until it swoops up tall, tall, TALL.',
+   say:"The higher the hair, the further from my friends in hell.",
+   zones:[ {x:200,y:110,r:120,need:1700,upd:p=>{ swoopS=.25+.75*p; updateHair(); }} ] },
+ { name:'Diaper Change', tool:'diaper', label:'Fresh Grown-Up Undergarment', mode:'curtain',
+   instr:"Something smells like a filibuster. Behind the privacy curtain, give the Senator a fresh, discreet undergarment. Tap the curtain 3 times.",
+   say:"I made stool." },
+ { name:'Press Conference', tool:'speech', label:'His Official Speech', mode:'final',
+   instr:'He is ready: taped, plucked, tanned, plumped, and fresh. Hand him his speech and send him out to face the press!',
+   say:"Is my hair straight? Never mind. I look MAGNIFICENT." }
+];
+
+/* spray coverage points */
+const sprayPts=[];
+const addEllipse=(cx,cy,rx,ry,st=14)=>{ for(let x=cx-rx;x<=cx+rx;x+=st) for(let y=cy-ry;y<=cy+ry;y+=st) if(((x-cx)/rx)**2+((y-cy)/ry)**2<1) sprayPts.push({x,y}); };
+addEllipse(200,212,112,114); addEllipse(126,290,40,36); addEllipse(274,290,40,36); addEllipse(200,326,66,16);
+addEllipse(56,355,38,48); addEllipse(344,355,38,48);
+let covered=new Set();
+
+/* ---------- state ---------- */
+let idx=0, step=null, doneFlag=false, down=false, last=null, curtainTaps=0;
+
+function buildTray(){
+  $('tray').innerHTML=steps.map((s,i)=>`<div class="slot ${i<idx?'done':i===idx?'cur':''}" title="${s.name}">${ART[s.tool].svg}</div>`).join('');
+}
+function drawHints(){
+  const g=$('hints'); g.innerHTML='';
+  (step.zones||[]).forEach(z=>{ if(z.done) return;
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',z.x); c.setAttribute('cy',z.y); c.setAttribute('r',Math.min(z.r,60)); c.setAttribute('class','hint'); z.hint=c; g.appendChild(c); });
+}
+const setProgress=f=>$('bar').style.width=Math.round(f*100)+'%';
+const zoneProgress=()=>step.zones.reduce((a,z)=>a+(z.done?1:Math.min(z.p||0,1)),0)/step.zones.length;
+
+function setTool(key){
+  const a=ART[key];
+  $('toolIn').innerHTML=a.svg;
+  toolEl.style.transform=`translate(-${a.hot[0]}%,-${a.hot[1]}%)`;
+  $('toolIn').style.transformOrigin=`${a.hot[0]}% ${a.hot[1]}%`;
+}
+function startStep(i){
+  idx=i; step=steps[i]; doneFlag=false;
+  (step.zones||[]).forEach(z=>{ z.p=0; z.done=false; });
+  $('stepno').textContent=`Step ${i+1} of ${steps.length}`;
+  $('stepname').textContent=step.name;
+  $('instr').textContent=step.instr;
+  $('toolEm').innerHTML=ART[step.tool].svg; $('toolName').textContent=step.label;
+  setTool(step.tool);
+  $('next').disabled=true;
+  $('next').textContent=i===steps.length-1?'🎤 Go live!':'Next step ➜';
+  setProgress(0); buildTray(); drawHints(); say(step.say);
+  if(step.enter) step.enter();
+  if(step.mode==='curtain'){ curtainTaps=0; const c=$('curtain'); c.classList.remove('open'); c.classList.add('on');
+    $('cnote').innerHTML='🔒 Privacy Curtain<small>Tap the curtain to help with a discreet, dignified underwear upgrade.</small>'; }
+  if(step.mode==='final'){ $('next').disabled=false; doneFlag=true; setProgress(1); }
+}
+function completeStep(){
+  if(doneFlag) return; doneFlag=true; setProgress(1);
+  if(step.finish) step.finish();
+  sfx.done(); sparkles(200,220,6);
+  $('next').disabled=false;
+}
+function pluck(i,tip){
+  const el=$('st'+i); const dx=(tip[0]-200)*.4, dy=-60-Math.random()*30, rot=(Math.random()-.5)*120;
+  animate(500,t=>{ el.setAttribute('transform',`translate(${dx*t} ${dy*t}) rotate(${rot*t} ${tip[0]} ${tip[1]})`); el.setAttribute('opacity',1-t); });
+  if(Math.random()<.5) say(['Ow!','Yowch!','Eep!','Sweet freedom!'][Math.floor(Math.random()*4)]);
+}
+function placeHair(){
+  $('hairDrop').style.display=''; swoopS=.25;
+  animate(700,t=>{ hairY=-280*(1-bounce(t)); updateHair(); if(t>.3) op('wisps',0); });
+  setTimeout(()=>{ sfx.plop(); sparkles(200,120,4); },380);
+}
+
+/* ---------- input ---------- */
+function handle(pt,isDown){
+  if(!step||doneFlag) return;
+  if(step.mode==='tap'){
+    if(!isDown) return;
+    for(const z of step.zones){
+      if(!z.done && dist(pt,z)<z.r){
+        z.done=true; z.act(); if(z.hint) z.hint.remove();
+        (sfx[step.sound]||sfx.pop)(); sparkles(z.x,z.y,3);
+        setProgress(zoneProgress());
+        if(step.zones.every(z=>z.done)) setTimeout(completeStep,550);
+        return;
+      }
+    }
+    return;
+  }
+  if(step.mode==='rub'){
+    const moved=last?Math.min(dist(pt,last),40):0;
+    let active=false;
+    for(const z of step.zones){
+      if(z.done||dist(pt,z)>=z.r) continue;
+      active=true; z.p=Math.min(1,(z.p||0)+moved/z.need); z.upd(z.p);
+      if(z.p>=1){ z.done=true; if(z.hint) z.hint.remove(); sfx.pop(); sparkles(z.x,z.y,2); }
+    }
+    if(moved>2){ loopSound(step.loop); if(Math.random()<.55) fx(step.fxCls,pt.x+(Math.random()-.5)*18,pt.y+(Math.random()-.5)*18); }
+    if(active) setProgress(zoneProgress());
+    if(step.zones.every(z=>z.done)) completeStep();
+    return;
+  }
+  if(step.mode==='cover'){
+    loopSound('spray');
+    for(let i=0;i<3;i++) fx('mist',pt.x+(Math.random()-.5)*44,pt.y+(Math.random()-.5)*44);
+    sprayPts.forEach((p,i)=>{ if(!covered.has(i)&&dist(p,pt)<32) covered.add(i); });
+    const t=Math.min(1,covered.size/sprayPts.length/.88);
+    setSkin(t); setProgress(t);
+    if(t>=1) completeStep();
+  }
+}
+function moveCursor(e){ const r=stage.getBoundingClientRect(); toolEl.style.left=(e.clientX-r.left)+'px'; toolEl.style.top=(e.clientY-r.top)+'px'; }
+const toolVisible=()=>step&&step.mode!=='final'&&step.mode!=='curtain'&&!doneFlag;
+stage.addEventListener('pointerdown',e=>{
+  if(e.target.closest('.curtain')) return;
+  ac(); down=true; try{stage.setPointerCapture(e.pointerId);}catch(_){}
+  if(toolVisible()) toolEl.classList.add('on'); toolEl.classList.add('active'); moveCursor(e);
+  const pt=svgPt(e); last=pt; handle(pt,true);
+});
+stage.addEventListener('pointermove',e=>{
+  toolEl.classList.toggle('on',!!toolVisible()); moveCursor(e);
+  if(!down) return; const pt=svgPt(e); handle(pt,false); last=pt;
+});
+const up=()=>{ down=false; last=null; toolEl.classList.remove('active'); };
+stage.addEventListener('pointerup',up); stage.addEventListener('pointercancel',up);
+stage.addEventListener('pointerleave',()=>{ if(!down) toolEl.classList.remove('on'); });
+
+/* curtain */
+const curtainLines=[
+  '*rustle rustle*<small>"I would like the Spider-Man pull-ups today."</small>',
+  '*a gentle cloud of baby powder*<small>"Ahh, this takes me back to my first term… in 1962."</small>',
+  '*triumphant Velcro sound*<small>"Fresh, dry, and ready to legislate!"</small>'
+];
+$('curtain').addEventListener('pointerdown',e=>{
+  e.stopPropagation(); ac();
+  if(!step||step.mode!=='curtain'||curtainTaps>=3) return;
+  const c=$('curtain'); c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake');
+  sfx.rustle();
+  const r=stage.getBoundingClientRect(), x=VB.x+(e.clientX-r.left)/r.width*VB.w, y=VB.y+(e.clientY-r.top)/r.height*VB.h;
+  for(let i=0;i<4;i++) setTimeout(()=>fx('puff',x+(Math.random()-.5)*80,y+(Math.random()-.5)*60),i*80);
+  $('cnote').innerHTML=curtainLines[curtainTaps];
+  curtainTaps++; setProgress(curtainTaps/3);
+  if(curtainTaps>=3){
+    animate(800,t=>op('stink',1-t));
+    setTimeout(()=>{ c.classList.add('open'); setTimeout(()=>{ c.classList.remove('on'); completeStep(); say("Smell that? That's the smell of fresh leadership."); sparkles(200,440,5); },1000); },900);
+  }
+});
+
+/* next / live */
+$('next').addEventListener('click',()=>{ ac(); if(idx<steps.length-1){ startStep(idx+1); return; } goLive(); });
+function goLive(){
+  toolEl.classList.remove('on');
+  stage.classList.add('press');
+  animate(400,t=>op('tapeNeck',1-t));
+  const sp=$('speech'), si=$('speechInner'); sp.style.display='';
+  animate(300,t=>si.setAttribute('transform',`translate(344 311) scale(${bounce(t)}) translate(-344 -311)`));
+  say("Ahem. My speech…");
+  setTimeout(()=>{ sfx.whoosh(); animate(900,t=>si.setAttribute('transform',`translate(${260*t} ${-420*t+180*t*t}) rotate(${720*t} 344 311)`),()=>sp.style.display='none'); },1300);
+  setTimeout(()=>say("Don't worry, I have my own speech prepared, and it will only be about men's butts."),1900);
+  $('stepUI').style.display='none'; $('results').classList.add('on');
+  idx=steps.length; buildTray();
+  let n=0; const fl=setInterval(()=>{ const f=$('flash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); sfx.shutter(); if(++n>7) clearInterval(fl); },420);
+  setTimeout(()=>{ op('winkL',1); sfx.kiss(); sparkles(200,300,3,'💋'); },3200);
+  setTimeout(()=>op('winkL',0),4000);
+  const cols=['#ff5fae','#7b4dff','#ffd84d','#4dd6ff','#7dff9a'];
+  for(let i=0;i<70;i++) setTimeout(()=>{ const d=fx('confetti',Math.random()*400,-10); d.style.background=cols[i%5]; },i*25);
+  setTimeout(()=>{ $('afterImg').src=snapshot(); },2500);
+}
+$('again').addEventListener('click',()=>location.reload());
+$('snd').addEventListener('click',()=>{ soundOn=!soundOn; $('snd').textContent='Sound: '+(soundOn?'ON':'OFF'); if(!soundOn&&loop) loop.g.gain.value=0; });
+
+setSkin(0); setLips(0); updateHair(); flaps(0);
+$('beforeImg').src=snapshot();
+$('bubble').textContent="Eh? Is it Tuesday? Is it 1954?";
+startStep(0);
+})();
+</script>
+</body>
+</html>
